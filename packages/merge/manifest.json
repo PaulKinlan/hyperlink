@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Merge",
+  "version": "1.0.0",
+  "description": "A Chrome extension for merging things.",
+  "action": {
+    "default_title": "Merge"
+  },
+  "background": {
+    "service_worker": "dist/index.js"
+  }
+}

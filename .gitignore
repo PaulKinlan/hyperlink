@@ -1,0 +1,5 @@
+.wireit/
+dist/
+node_modules/
+*.log
+*.tsbuildinfo

@@ -1,0 +1,19 @@
+{
+  "name": "@hyperlink-experiments/shared",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc",
+      "files": [
+        "src/**/*.ts"
+      ],
+      "output": [
+        "dist"
+      ]
+    }
+  }
+}

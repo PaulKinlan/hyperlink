@@ -1,0 +1,37 @@
+{
+  "name": "@hyperlink-experiments/summary",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "rm -rf dist && esbuild src/index.ts src/options.ts src/content.ts src/offscreen.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "files": [
+        "src/**/*.ts",
+        "manifest.json"
+      ],
+      "output": [
+        "dist"
+      ],
+      "dependencies": [
+        "../shared:build"
+      ]
+    }
+  },
+  "dependencies": {
+    "@google/genai": "^1.10.0",
+    "@hyperlink-experiments/shared": "1.0.0",
+    "@types/chrome": "^0.1.1",
+    "@types/turndown": "^5.0.5",
+    "dom-parser": "^1.1.5",
+    "jsdom": "^26.1.0",
+    "linkedom": "^0.18.11",
+    "turndown": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.208"
+  }
+}

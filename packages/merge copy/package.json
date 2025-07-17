@@ -1,0 +1,26 @@
+{
+  "name": "@hyperlink-experiments/merge",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc",
+      "files": [
+        "src/**/*.ts",
+        "manifest.json"
+      ],
+      "output": [
+        "dist"
+      ],
+      "dependencies": [
+        "../shared:build"
+      ]
+    }
+  },
+  "dependencies": {
+    "@hyperlink-experiments/shared": "1.0.0"
+  }
+}

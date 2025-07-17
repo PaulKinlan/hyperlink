@@ -1,0 +1,48 @@
+{
+  "name": "hyperlink-experiments",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "wireit",
+    "prepare": "husky install",
+    "test": "vitest"
+  },
+  "wireit": {
+    "build": {
+      "command": "npm run build --workspaces --if-present"
+    }
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.1",
+    "@types/jsdom": "^21.1.7",
+    "@types/turndown": "^5.0.5",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/parser": "^8.37.0",
+    "esbuild": "^0.25.6",
+    "eslint": "^9.31.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "vitest": "^3.2.4",
+    "wireit": "^0.14.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
+  "dependencies": {
+    "linkedom": "^0.18.11"
+  }
+}
