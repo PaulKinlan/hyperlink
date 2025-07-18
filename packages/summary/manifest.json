@@ -10,7 +10,7 @@
     "service_worker": "dist/index.js"
   },
   "options_page": "options.html",
-  "permissions": ["storage", "offscreen"],
+  "permissions": ["storage", "offscreen", "tabGroups"],
   "host_permissions": ["https://*/", "http://*/"],
   "content_scripts": [
     {

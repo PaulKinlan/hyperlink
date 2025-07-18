@@ -1,0 +1,16 @@
+body {
+  font-family: sans-serif;
+  padding: 1em;
+}
+
+#summary-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.summary-item {
+  border: 1px solid #ccc;
+  padding: 1em;
+  border-radius: 8px;
+}
