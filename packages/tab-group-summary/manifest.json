@@ -6,11 +6,12 @@
   "background": {
     "service_worker": "dist/index.js"
   },
-  "permissions": ["tabGroups", "scripting", "storage"],
+  "permissions": ["tabGroups", "scripting", "storage", "offscreen"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_title": "Tab Group Summary"
   },
+  "options_page": "options.html",
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
