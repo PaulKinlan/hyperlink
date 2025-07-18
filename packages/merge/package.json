@@ -2,12 +2,13 @@
   "name": "@hyperlink-experiments/merge",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "build": "wireit"
   },
   "wireit": {
     "build": {
-      "command": "tsc",
+      "command": "rm -rf dist && esbuild src/index.ts src/options.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
       "files": [
         "src/**/*.ts",
         "manifest.json"
