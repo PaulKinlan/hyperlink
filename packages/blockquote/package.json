@@ -1,0 +1,34 @@
+{
+  "name": "@hyperlink-experiments/blockquote",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "rm -rf dist && esbuild src/index.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "files": [
+        "src/**/*.ts",
+        "manifest.json",
+        "options.html",
+        "options.js",
+        "popup.html"
+      ],
+      "output": [
+        "dist"
+      ],
+      "dependencies": [
+        "../shared:build"
+      ]
+    }
+  },
+  "dependencies": {
+    "@google/genai": "^1.10.0",
+    "@hyperlink-experiments/shared": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.208"
+  }
+}
