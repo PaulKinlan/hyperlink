@@ -1,0 +1,25 @@
+{
+  "name": "@hyperlink-experiments/tab-group-summary",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "rm -rf dist && esbuild src/index.ts src/content.ts src/summary.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.js",
+        "manifest.json"
+      ],
+      "output": [
+        "dist"
+      ]
+    }
+  },
+  "dependencies": {
+    "@types/chrome": "^0.1.1"
+  }
+}

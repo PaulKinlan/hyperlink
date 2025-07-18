@@ -1,71 +1,94 @@
-chrome.tabGroups.onUpdated.addListener(async (tabGroup) => {
-  // When a tab is added to a group, this listener is triggered.
-  // We can then get all the tabs in the group and update the summary.
-  const tabs = await chrome.tabs.query({ groupId: tabGroup.id });
-  updateSummary(tabGroup.id, tabs);
+import { GoogleGenAI } from '@google/genai';
+
+const OFFSCREEN_DOCUMENT_PATH = 'offscreen.html';
+
+chrome.runtime.onMessage.addListener(async (request, sender) => {
+  if (request.action === 'summarize') {
+    // Create the offscreen document if it doesn't exist
+    if (!(await hasOffscreenDocument())) {
+      await chrome.offscreen.createDocument({
+        url: OFFSCREEN_DOCUMENT_PATH,
+        reasons: [chrome.offscreen.Reason.DOM_PARSER],
+        justification: 'Parse HTML to get markdown for summary',
+      });
+    }
+
+    // Fetch the HTML content
+    const response = await fetch(request.url);
+    const html = await response.text();
+
+    // Send a message to the offscreen document to get the markdown
+    chrome.runtime.sendMessage({
+      action: 'getMarkdown',
+      html,
+      senderTabId: sender.tab.id,
+    });
+  }
 });
 
-async function updateSummary(groupId: number, tabs: chrome.tabs.Tab[]) {
-  const summaryTab = await findOrCreateSummaryTab(groupId, tabs);
-  const summaries = await Promise.all(
-    tabs
-      .filter((tab) => tab.id !== summaryTab.id) // Exclude the summary tab itself
-      .map(getSummary),
-  );
+chrome.runtime.onMessage.addListener(async (request, sender) => {
+  if (request.action === 'markdown') {
+    // Close the offscreen document
+    await chrome.offscreen.closeDocument();
 
-  // Send the summaries to the summary tab
-  chrome.tabs.sendMessage(summaryTab.id, {
-    action: 'updateSummary',
-    summaries,
-  });
-}
-
-async function findOrCreateSummaryTab(
-  groupId: number,
-  tabs: chrome.tabs.Tab[],
-) {
-  const summaryTab = tabs.find((tab) => tab.url.includes('summary.html'));
-  if (summaryTab) {
-    return summaryTab;
-  }
-
-  const newTab = await chrome.tabs.create({
-    url: 'summary.html',
-    index: 0,
-  });
-  await chrome.tabs.group({
-    groupId,
-    tabIds: [newTab.id],
-  });
-  return newTab;
-}
-
-async function getSummary(tab: chrome.tabs.Tab): Promise<string> {
-  if (!tab.id) {
-    return '';
-  }
-  return new Promise((resolve) => {
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tab.id },
-        files: ['dist/content.js'],
-      },
-      () => {
-        chrome.tabs.sendMessage(
-          tab.id,
-          { action: 'getMarkdown' },
-          (response) => {
-            if (chrome.runtime.lastError) {
-              console.error(chrome.runtime.lastError);
-              resolve('');
-            } else {
-              // Now we have the markdown, let's summarize it.
-              // This part is simplified. In a real extension, you'd use an LLM.
-              resolve(response.markdown.substring(0, 200));
-            }
+    // Now summarize the markdown
+    chrome.storage.sync.get('apiKey', async (data) => {
+      if (data.apiKey) {
+        const genAI = new GoogleGenAI({ apiKey: data.apiKey });
+        const model = 'gemini-2.0-flash';
+        const config = { tools: [], responseMimeType: 'text/plain' };
+        const contents = [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Summarize the following article:\n\n${request.markdown}`,
+              },
+            ],
           },
-        );
-      },
-    );
-  });
+        ];
+
+        try {
+          const result = await genAI.models.generateContent({
+            model,
+            config,
+            contents,
+          });
+          const summary = result.text;
+          if (sender.id == chrome.runtime.id) {
+            chrome.tabs.sendMessage(request.senderTabId, {
+              action: 'summary',
+              summary,
+            });
+          }
+        } catch (error) {
+          console.error('Error summarizing:', error);
+          if (sender.tab?.id) {
+            chrome.tabs.sendMessage(request.senderId, {
+              action: 'summary',
+              summary: 'Error summarizing content.',
+            });
+          }
+        }
+      } else {
+        if (sender.tab?.id) {
+          chrome.tabs.sendMessage(sender.tab.id, {
+            action: 'summary',
+            summary: 'API key not set. Please set it in the options page.',
+          });
+        }
+      }
+    });
+  }
+});
+
+async function hasOffscreenDocument() {
+  // @ts-expect-error - clients is not in the types
+  const matchedClients = await clients.matchAll();
+  for (const client of matchedClients) {
+    if (client.url.endsWith(OFFSCREEN_DOCUMENT_PATH)) {
+      return true;
+    }
+  }
+  return false;
 }
