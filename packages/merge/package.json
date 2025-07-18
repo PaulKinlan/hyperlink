@@ -1,16 +1,20 @@
 {
   "name": "@hyperlink-experiments/merge",
   "version": "1.0.0",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "wireit"
   },
   "wireit": {
     "build": {
-      "command": "tsc",
+      "command": "rm -rf dist && esbuild src/index.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
       "files": [
         "src/**/*.ts",
-        "manifest.json"
+        "manifest.json",
+        "options.html",
+        "options.js",
+        "popup.html"
       ],
       "output": [
         "dist"
@@ -21,6 +25,10 @@
     }
   },
   "dependencies": {
+    "@google/genai": "^1.10.0",
     "@hyperlink-experiments/shared": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.208"
   }
 }
