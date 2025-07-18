@@ -11,7 +11,7 @@ chrome.runtime.onMessage.addListener((request) => {
   }
 
   if (request.action === 'addSummary') {
-    const { summary, url, title, tabId } = request;
+    const { summary, url, title, tabId, screenshot } = request;
 
     const summaryItem = document.createElement('div');
     summaryItem.className = 'summary-item';
@@ -29,11 +29,26 @@ chrome.runtime.onMessage.addListener((request) => {
     });
     heading.appendChild(link);
 
+    const contentContainer = document.createElement('div');
+    contentContainer.className = 'content-container';
+
     const summaryContent = document.createElement('div');
-    summaryContent.innerHTML = marked.parse(summary);
+    summaryContent.className = 'summary-content';
+    Promise.resolve(marked.parse(summary)).then((html) => {
+      summaryContent.innerHTML = html;
+    });
+
+    const screenshotContainer = document.createElement('div');
+    screenshotContainer.className = 'screenshot-container';
+    const screenshotImg = document.createElement('img');
+    screenshotImg.src = screenshot;
+    screenshotContainer.appendChild(screenshotImg);
+
+    contentContainer.appendChild(summaryContent);
+    contentContainer.appendChild(screenshotContainer);
 
     summaryItem.appendChild(heading);
-    summaryItem.appendChild(summaryContent);
+    summaryItem.appendChild(contentContainer);
 
     container.appendChild(summaryItem);
   }

@@ -27,12 +27,17 @@ async function updateSummary(groupId: number, tabs: chrome.tabs.Tab[]) {
 
       const summaryPromises = tabsToSummarize.map(async (tab) => {
         const summary = await getSummary(tab);
+        const screenshot = await chrome.tabs.captureVisibleTab(tab.windowId, {
+          format: 'jpeg',
+          quality: 50,
+        });
         return {
           action: 'addSummary',
           summary,
           url: tab.url,
           title: tab.title,
           tabId: tab.id,
+          screenshot,
         };
       });
 

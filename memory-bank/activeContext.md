@@ -20,6 +20,7 @@ The current focus is on fixing issues in the `tab-group-summary` package.
 - Fixed a "No current offscreen document" error by ensuring the offscreen document is only created and closed when there are tabs to summarize.
 - Fixed an issue where the markdown summary was not being correctly extracted from the Gemini API response, causing rendering errors.
 - Fixed a race condition that could cause duplicate summary tabs to be created by querying all open tabs. The extension now focuses the existing summary tab if it's already open.
+- Added screenshots to the summary page. Each summary now includes a screenshot of the tab at the time of summarization.
 
 ## Next Steps
 

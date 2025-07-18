@@ -17,6 +17,7 @@ This document tracks what works, what's left to build, and the current status of
 - Fixed an error where the extension would try to close a non-existent offscreen document.
 - Fixed an issue with markdown rendering due to incorrect text extraction from the Gemini API response.
 - Fixed a race condition that could cause duplicate summary tabs to be created by querying all open tabs.
+- The `tab-group-summary` extension now displays a screenshot of the tab next to the summary.
 
 ## What's Left to Build
 
