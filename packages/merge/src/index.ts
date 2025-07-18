@@ -1,5 +1,5 @@
 import TurndownService from 'turndown';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/genai';
 
 const turndownService = new TurndownService();
 
