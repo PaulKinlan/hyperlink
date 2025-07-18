@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Blockquote Updater",
+  "version": "1.0",
+  "description": "Updates blockquotes with live content from a URL.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "dist/index.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
