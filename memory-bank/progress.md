@@ -18,10 +18,11 @@ This document tracks what works, what's left to build, and the current status of
 - Fixed an issue with markdown rendering due to incorrect text extraction from the Gemini API response.
 - Fixed a race condition that could cause duplicate summary tabs to be created by querying all open tabs.
 - The `tab-group-summary` extension now displays a screenshot of the tab next to the summary.
+- The `merge` package now correctly uses a content script to get markdown from the page.
+- The `merge` package now has a click listener that detects when a link is clicked with the Option or Control key pressed, and triggers the merge process.
 
 ## What's Left to Build
 
-- The core functionality of the `merge` Chrome extension.
 - Tests for the `summary` and `merge` packages.
 - Refinement of the `summary` extension's UI and error handling.
 - Refinement of the `tab-group-summary` extension's UI and error handling.
@@ -29,7 +30,7 @@ This document tracks what works, what's left to build, and the current status of
 
 ## Current Status
 
-The `summary` and `tab-group-summary` experiments are ready for testing and refinement. The `merge` experiment is ready for development.
+The `summary`, `tab-group-summary`, and `merge` experiments are ready for testing and refinement.
 
 ## Known Issues
 

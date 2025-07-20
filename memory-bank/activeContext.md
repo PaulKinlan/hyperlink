@@ -21,10 +21,13 @@ The current focus is on fixing issues in the `tab-group-summary` package.
 - Fixed an issue where the markdown summary was not being correctly extracted from the Gemini API response, causing rendering errors.
 - Fixed a race condition that could cause duplicate summary tabs to be created by querying all open tabs. The extension now focuses the existing summary tab if it's already open.
 - Added screenshots to the summary page. Each summary now includes a screenshot of the tab at the time of summarization.
+- **`merge` package**: Refactored to use a content script to get markdown from the page, instead of trying to use `turndown` in the service worker.
+- **`merge` package**: Added a click listener to the content script to detect when a link is clicked with the Option or Control key pressed. This will trigger the merge process.
 
 ## Next Steps
 
+- Test the `merge` extension thoroughly.
 - Test the `tab-group-summary` extension thoroughly.
 - Refine the popover UI and error handling.
 - Add tests for the `tab-group-summary` package.
-- Begin work on the `merge` experiment.
+- Add tests for the `merge` package.
