@@ -1,15 +1,15 @@
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: "memex-trail-join",
-    title: "Create Trail",
-    contexts: ["selection"]
+    id: 'memex-trail-join',
+    title: 'Create Trail',
+    contexts: ['selection'],
   });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "memex-trail-join") {
+  if (info.menuItemId === 'memex-trail-join') {
     const selectedText = info.selectionText;
-    const targetLink = prompt("Enter the target link:");
+    const targetLink = prompt('Enter the target link:');
     if (targetLink) {
       const url = tab.url;
       const textFragment = `#:~:text=${encodeURIComponent(selectedText)}`;

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         urlTitle.textContent = url;
         linksList.appendChild(urlTitle);
         const ul = document.createElement('ul');
-        links.forEach(link => {
+        links.forEach((link) => {
           const li = document.createElement('li');
           const a = document.createElement('a');
           a.href = link.targetLink;
