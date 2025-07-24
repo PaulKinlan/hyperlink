@@ -24,7 +24,11 @@ chrome.runtime.onMessage.addListener((request) => {
     if (selection) {
       const range = selection.getRangeAt(0);
       range.deleteContents();
-      range.insertNode(document.createTextNode(request.text));
+      const textNode = document.createTextNode(request.text);
+      range.insertNode(textNode);
+      range.selectNode(textNode);
+      selection.removeAllRanges();
+      selection.addRange(range);
     }
   }
 });
