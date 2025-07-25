@@ -1,0 +1,24 @@
+{
+  "name": "Memex Trail Join",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Create links between content on any web page and any other and have them persist.",
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "activeTab"
+  ],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"]
+    }
+  ],
+  "action": {
+    "default_title": "Memex Trail Join",
+    "default_popup": "popup.html"
+  }
+}
