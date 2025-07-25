@@ -31,18 +31,27 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
           chrome.tabs.sendMessage(sender.tab.id, {
             action: 'replace',
             text,
+            url: request.url,
+            textFragment: request.textFragment,
+            zoomLevel: request.zoomLevel,
           });
         } catch (error) {
           console.error(`Error with Gemini API: ${error}`);
           chrome.tabs.sendMessage(sender.tab.id, {
             action: 'replace',
             text: `Error: ${error.message}`,
+            url: request.url,
+            textFragment: request.textFragment,
+            zoomLevel: request.zoomLevel,
           });
         }
       } else {
         chrome.tabs.sendMessage(sender.tab.id, {
           action: 'replace',
           text: 'API key not set. Please set it in the options page.',
+          url: request.url,
+          textFragment: request.textFragment,
+          zoomLevel: request.zoomLevel,
         });
       }
     });
