@@ -24,15 +24,17 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === 'showBacklinks') {
     const url = tab.url;
     if (url) {
-      const backlinks = (await storage.get(url)) as Backlink[];
+      const backlinks = (await storage.get(url)) as Backlinks[];
       if (backlinks) {
-        const backlinkUrls = backlinks.map((b) => b.url);
         chrome.tabs.create({
           url: `data:text/html,
             <h1>Backlinks for ${url}</h1>
             <ul>
-              ${backlinkUrls
-                .map((b) => `<li><a href="${b}">${b}</a></li>`)
+              ${backlinks
+                .map(
+                  (b) =>
+                    `<li><a href="${b.url}">${b.title}</a> - ${b.url}</li>`,
+                )
                 .join('')}
             </ul>
           `,
@@ -42,15 +44,17 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   } else if (info.menuItemId === 'showBacklinksForLink') {
     const url = info.linkUrl;
     if (url) {
-      const backlinks = (await storage.get(url)) as Backlink[];
+      const backlinks = (await storage.get(url)) as Backlinks[];
       if (backlinks) {
-        const backlinkUrls = backlinks.map((b) => b.url);
         chrome.tabs.create({
           url: `data:text/html,
             <h1>Backlinks for ${url}</h1>
             <ul>
-              ${backlinkUrls
-                .map((b) => `<li><a href="${b}">${b}</a></li>`)
+              ${backlinks
+                .map(
+                  (b) =>
+                    `<li><a href="${b.url}">${b.title}</a> - ${b.url}</li>`,
+                )
                 .join('')}
             </ul>
           `,
