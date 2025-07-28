@@ -1,11 +1,9 @@
-import { Mutex } from 'async-mutex';
 import {
   type Backlinks,
   Storage,
 } from '@hyperlink-experiments/shared/src/index';
 
 const storage = new Storage();
-const mutex = new Mutex();
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
