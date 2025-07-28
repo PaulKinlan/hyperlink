@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Backlinks",
+  "version": "0.0.1",
+  "description": "An extension to track backlinks and navigation paths.",
+  "permissions": ["storage", "contextMenus", "tabs"],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js"]
+    }
+  ]
+}
