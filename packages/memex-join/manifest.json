@@ -3,7 +3,7 @@
   "version": "0.1",
   "manifest_version": 3,
   "description": "Create links between content on any web page and any other and have them persist.",
-  "permissions": ["storage", "contextMenus", "activeTab", "history"],
+  "permissions": ["storage", "contextMenus", "activeTab", "history", "tabs"],
   "background": {
     "service_worker": "dist/background.js"
   },

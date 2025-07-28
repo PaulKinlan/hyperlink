@@ -3,25 +3,22 @@ const createLinks = async (
 ) => {
   const linksList = document.getElementById('links-list');
   chrome.storage.local.get(null, (items) => {
+    const ul = document.createElement('ul');
+    linksList.appendChild(ul);
     for (const url in items) {
       const links = items[url];
       if (Array.isArray(links)) {
-        const urlTitle = document.createElement('h2');
-        urlTitle.textContent = url;
-        linksList.appendChild(urlTitle);
-        const ul = document.createElement('ul');
         links.forEach((link) => {
           const li = document.createElement('li');
           const a = document.createElement('a');
           a.href = link.targetLink;
-          a.textContent = `${decodeURIComponent(link.textFragment.replace('#:~:text=', ''))} -> ${link.targetLink}`;
+          a.textContent = `${link.targetLink}`;
           a.target = '_blank';
 
           a.addEventListener('click', createLinkHandler);
           li.appendChild(a);
           ul.appendChild(li);
         });
-        linksList.appendChild(ul);
       }
     }
   });
@@ -78,17 +75,17 @@ const createLinksFromTabs = async (
   createLinkHandler: (event: any) => Promise<void>,
 ) => {
   const tabsList = document.getElementById('tabs-list');
-  chrome.tabs.query({ currentWindow: true }, (tabs) => {
-    tabs.forEach((tab) => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = tab.url;
-      a.textContent = tab.title || tab.url;
-      a.target = '_blank';
-      a.addEventListener('click', createLinkHandler);
-      li.appendChild(a);
-      tabsList.appendChild(li);
-    });
+  const tabs = await chrome.tabs.query({});
+
+  tabs.forEach((tab) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = tab.url;
+    a.textContent = tab.title || tab.url;
+    a.target = '_blank';
+    a.addEventListener('click', createLinkHandler);
+    li.appendChild(a);
+    tabsList.appendChild(li);
   });
 };
 
