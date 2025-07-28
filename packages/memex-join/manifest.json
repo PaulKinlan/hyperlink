@@ -3,13 +3,18 @@
   "version": "0.1",
   "manifest_version": 3,
   "description": "Create links between content on any web page and any other and have them persist.",
-  "permissions": [
-    "storage",
-    "contextMenus",
-    "activeTab"
-  ],
+  "permissions": ["storage", "contextMenus", "activeTab", "history"],
   "background": {
     "service_worker": "dist/background.js"
+  },
+  "commands": {
+    "create-link": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Creates a link on the current page."
+    }
   },
   "content_scripts": [
     {

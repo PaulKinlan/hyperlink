@@ -6,6 +6,16 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+chrome.commands.onCommand.addListener(async (command) => {
+  console.log(`Command: ${command}`);
+  if (command === 'create-link') {
+    await chrome.action.setPopup({
+      popup: 'create-link.html',
+    });
+    await chrome.action.openPopup();
+  }
+});
+
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'memex-trail-join') {
     const selectedText = info.selectionText;
