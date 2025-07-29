@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Image Links",
+  "version": "0.0.1",
+  "description": "An extension to make every part of an image on the page clickable and discoverable.",
+  "permissions": ["storage", "activeTab", "scripting", "webGpu"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"]
+    }
+  ],
+  "host_permissions": [
+    "https://huggingface.co/"
+  ]
+}
