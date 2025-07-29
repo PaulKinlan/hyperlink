@@ -9,10 +9,6 @@ async function createLink(
   links.push({ textFragment, targetLink });
   await chrome.storage.local.set({ [url]: links });
 
-  // After saving, highlight the new link
-  const decodedFragment = decodeURIComponent(
-    textFragment.replace('#:~:text=', ''),
-  );
   const range = document.createRange();
   const selection = window.getSelection();
   if (selection.rangeCount > 0) {
@@ -81,6 +77,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     const createLinkResult = await createLink(textFragment, targetLink);
     console.log('Create link result:', createLinkResult);
     sendResponse({ status: 'success' });
+    return false;
   }
 
   if (request.action === 'getSelectedText') {

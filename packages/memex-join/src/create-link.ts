@@ -106,18 +106,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const { selectedText } = await chrome.tabs.sendMessage(currentTab[0].id, {
       action: 'getSelectedText',
     });
+
     if (!selectedText) {
       console.error('No text selected');
       return;
     }
 
-    const response = await chrome.tabs.sendMessage(currentTab[0].id, {
+    const { status } = await chrome.tabs.sendMessage(currentTab[0].id, {
       action: 'createLink',
       textFragment: `#:~:text=${encodeURIComponent(selectedText)}`,
       targetLink,
     });
 
-    if (response.status === 'success') {
+    if (status === 'success') {
       console.log('Link created successfully');
       window.close();
     }
