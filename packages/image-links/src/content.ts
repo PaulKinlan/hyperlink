@@ -1,10 +1,8 @@
-import * as ort from 'onnxruntime-web';
-import { SAM2 } from './sam';
-import { float32ArrayToCanvas } from './imageutils';
+import { float32ArrayToCanvas, resizeCanvas, sliceTensor } from './imageutils';
 
 let isOptionKeyPressed = false;
 let currentImage: HTMLImageElement | null = null;
-let sam: SAM2 | null = null;
+const OFFSCREEN_DOCUMENT_PATH = 'offscreen.html';
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Alt') {
@@ -15,9 +13,6 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keyup', (event) => {
   if (event.key === 'Alt') {
     isOptionKeyPressed = false;
-    if (currentImage) {
-      // areset a canvas or something
-    }
   }
 });
 
@@ -38,18 +33,28 @@ document.addEventListener('mouseout', (event) => {
 });
 
 async function handleImageHover(image: HTMLImageElement) {
-  if (!sam) {
-    sam = new SAM2();
-    await sam.downloadModels();
-    await sam.createSessions();
+  const { src } = image;
+
+  const encodedSrc = src.replace(/[^a-zA-Z0-9]/g, '_');
+  const cachedImage = document.querySelector(
+    `canvas[data-src="${encodedSrc}"]`,
+  );
+  if (cachedImage) {
+    console.log('Using cached image:', cachedImage);
+    return; // Already processed this image
   }
 
   const canvas = document.createElement('canvas');
-  canvas.width = image.width;
-  canvas.height = image.height;
+  canvas.setAttribute('data-src', encodedSrc);
+  canvas.width = 1024; //image.naturalWidth;
+  canvas.height = 1024; //  image.naturalWidth;
   canvas.style.position = 'absolute';
   canvas.style.top = image.offsetTop + 'px';
   canvas.style.left = image.offsetLeft + 'px';
+  canvas.style.width = image.width + 'px';
+  canvas.style.height = image.height + 'px';
+  canvas.style.zIndex = '1000';
+
   canvas.style.pointerEvents = 'none';
   document.body.appendChild(canvas);
 
@@ -58,30 +63,56 @@ async function handleImageHover(image: HTMLImageElement) {
     return;
   }
 
-  context.drawImage(image, 0, 0, image.width, image.height);
-  const imageData = context.getImageData(0, 0, image.width, image.height);
+  context.drawImage(image, 0, 0, 1024, 1024);
+  const imageData = context.getImageData(0, 0, 1024, 1024);
 
-  const tensor = new ort.Tensor('uint8', new Uint8Array(imageData.data), [
-    image.height,
-    image.width,
-    4,
-  ]);
-  await sam.encodeImage(tensor);
+  const imageResponse = await chrome.runtime.sendMessage({
+    action: 'encodeImage',
+    name: src,
+    imageData: new Uint8Array(imageData.data),
+    height: 1024,
+    width: 1024,
+  });
+
+  console.log('Encoded image:', imageResponse);
 
   canvas.style.pointerEvents = 'auto';
   canvas.addEventListener('click', async (event) => {
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    // Need to scale the click coordinates to the image size
+    // Assuming the canvas is 1024x1024, scale from image accordingly
+    const x = (event.clientX - rect.left) * (canvas.width / image.width);
+    const y = (event.clientY - rect.top) * (canvas.height / image.height);
+    console.log(`Clicked at (${x}, ${y}) on image: ${src}`);
+    const decodeResult = await chrome.runtime.sendMessage({
+      action: 'decodeMask',
+      name: src,
+      maskData: {
+        points: [{ x, y, label: 1 }],
+        maskArray: null,
+        maskShape: null,
+      },
+    });
+    console.log('Decoded mask:', decodeResult);
 
-    const results = await sam.decode([{ x, y, label: 1 }], null);
-    const mask = results['masks'];
-    const maskCanvas = float32ArrayToCanvas(
-      mask.data as Float32Array,
-      mask.dims[3],
-      mask.dims[2],
+    // fix decodeResults because of JSON serialization
+    decodeResult.iou_predictions.cpuData = new Float32Array(
+      Object.values(decodeResult.iou_predictions.cpuData),
     );
-    context.drawImage(maskCanvas, 0, 0);
+    decodeResult.masks.cpuData = new Float32Array(
+      Object.values(decodeResult.masks.cpuData),
+    );
+
+    const imageSize = { w: 1024, h: 1024 };
+    const maskTensors = decodeResult.masks;
+    const [bs, noMasks, width, height] = maskTensors.dims;
+    const maskScores = decodeResult.iou_predictions.cpuData;
+    const bestMaskIdx = maskScores.indexOf(Math.max(...maskScores));
+    const bestMaskArray = sliceTensor(maskTensors, bestMaskIdx);
+    let bestMaskCanvas = float32ArrayToCanvas(bestMaskArray, width, height);
+    bestMaskCanvas = resizeCanvas(bestMaskCanvas, imageSize);
+
+    context.drawImage(bestMaskCanvas, 0, 0);
 
     const objectName = 'object';
     const index = 0;

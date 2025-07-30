@@ -3,14 +3,18 @@
   "name": "Image Links",
   "version": "0.0.1",
   "description": "An extension to make every part of an image on the page clickable and discoverable.",
-  "permissions": ["storage", "activeTab", "scripting", "webGpu"],
+  "permissions": ["storage", "activeTab", "scripting", "offscreen"],
+  "background": {
+    "service_worker": "dist/index.js"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["dist/content.js"]
     }
   ],
-  "host_permissions": [
-    "https://huggingface.co/"
-  ]
+  "host_permissions": ["https://huggingface.co/"],
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://huggingface.co https://*.hf.co;"
+  }
 }

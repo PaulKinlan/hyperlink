@@ -1,5 +1,7 @@
 import * as ort from 'onnxruntime-web/all';
 
+// see https://github.com/geronimi73/next-sam/blob/main/app/SAM2.js
+
 const ENCODER_URL =
   'https://huggingface.co/g-ronimo/sam2-tiny/resolve/main/sam2_hiera_tiny_encoder.with_runtime_opt.ort';
 const DECODER_URL =
@@ -25,12 +27,37 @@ export class SAM2 {
 
   async downloadModel(url: string) {
     const filename = url.split('/').pop()!;
+    const root = await navigator.storage.getDirectory();
+
+    let fileHandle = await root
+      .getFileHandle(filename)
+      .catch((e) => console.error('File does not exist:', filename, e));
+
+    if (fileHandle) {
+      const file = await fileHandle.getFile();
+      if (file.size > 0) return await file.arrayBuffer();
+    }
+
     try {
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
       }
       const buffer = await response.arrayBuffer();
+
+      try {
+        const fileHandle = await root.getFileHandle(filename, {
+          create: true,
+        });
+        const writable = await fileHandle.createWritable();
+        await writable.write(buffer);
+        await writable.close();
+
+        console.log('Stored ' + filename);
+      } catch (e) {
+        console.error('Storage of ' + filename + ' failed: ', e);
+      }
+
       return buffer;
     } catch (e) {
       console.error('Download of ' + url + ' failed: ', e);
