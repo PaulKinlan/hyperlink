@@ -15,8 +15,9 @@ The goal of this project is to create a collection of browser extensions that ex
 
 ## Scope
 
-The initial scope of the project is to develop three extensions:
+The initial scope of the project is to develop four extensions:
 
 - `summary`: An extension to summarize the current page.
 - `tab-group-summary`: An extension to summarize all tabs in a group.
 - `merge`: An extension to merge the content of a linked page with the current page.
+- `image-links`: An extension to make every part of an image on the page clickable and discoverable.

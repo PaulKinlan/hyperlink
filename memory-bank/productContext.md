@@ -15,3 +15,4 @@ The target audience for this project is anyone who uses the web for research, le
 - As a user, I want to be able to quickly summarize the content of a web page so that I can understand the key points without having to read the entire article.
 - As a user, I want to be able to summarize all the tabs in a group so that I can get an overview of the content without having to switch between tabs.
 - As a user, I want to be able to merge the content of a linked page with the current page so that I can read the content in one place without having to navigate to a new page.
+- As a user, I want to be able to click on any object within an image on a webpage and get a link directly to that object, so that I can easily share and reference specific parts of an image.

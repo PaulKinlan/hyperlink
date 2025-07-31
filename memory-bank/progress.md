@@ -20,17 +20,17 @@ This document tracks what works, what's left to build, and the current status of
 - The `tab-group-summary` extension now displays a screenshot of the tab next to the summary.
 - The `merge` package now correctly uses a content script to get markdown from the page.
 - The `merge` package now has a click listener that detects when a link is clicked with the Option or Control key pressed, and triggers the merge process.
+- The `image-links` package is implemented. It uses the SAM2 model to allow users to select objects within images and get a direct link to them.
 
 ## What's Left to Build
 
-- Tests for the `summary` and `merge` packages.
-- Refinement of the `summary` extension's UI and error handling.
-- Refinement of the `tab-group-summary` extension's UI and error handling.
+- Tests for all packages.
+- Refinement of the UI and error handling for all extensions.
 - Additional experiments.
 
 ## Current Status
 
-The `summary`, `tab-group-summary`, and `merge` experiments are ready for testing and refinement.
+The `summary`, `tab-group-summary`, `merge`, and `image-links` experiments are ready for testing and refinement.
 
 ## Known Issues
 

@@ -10,6 +10,7 @@ The project is a monorepo containing multiple, independent packages (experiments
 
 - **Monorepo**: A single repository contains multiple projects, simplifying dependency management and code sharing.
 - **Workspace**: npm workspaces are used to manage the packages within the monorepo.
+- **Offscreen API for ML**: For extensions that run machine learning models, the `chrome.offscreen` API is used to run the model in a separate, hidden document. This is necessary because service workers do not have access to WebGPU, which is often required for efficient model execution. The service worker acts as a router, forwarding messages from the content script to the offscreen document.
 
 ## Key Technical Decisions
 

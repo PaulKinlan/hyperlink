@@ -11,6 +11,8 @@ This document describes the technologies, development setup, and technical const
 - **Prettier**: For code formatting.
 - **Husky & lint-staged**: For enforcing code style on commits.
 - **Vitest**: For testing.
+- **ONNX Runtime Web**: For running machine learning models in the browser.
+- **SAM2 (Segment Anything Model 2)**: A specific ML model used for image segmentation, hosted on Hugging Face.
 
 ## Development Setup
 
