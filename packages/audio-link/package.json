@@ -1,0 +1,32 @@
+{
+  "name": "@hyperlink-experiments/audio-link",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/content.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "rm -rf dist && esbuild src/background.ts src/content.ts src/offscreen.ts --bundle --platform=browser --outdir=dist --format=esm && cp ../../node_modules/onnxruntime-web/dist/* dist/ && cp ../../node_modules/@xenova/transformers/dist/* dist/",
+      "files": [
+        "src/**/*.ts",
+        "manifest.json"
+      ],
+      "output": [
+        "dist"
+      ],
+      "dependencies": [
+        "../shared:build"
+      ]
+    }
+  },
+  "dependencies": {
+    "@hyperlink-experiments/shared": "1.0.0",
+    "onnxruntime-web": "^1.18.0",
+    "@xenova/transformers": "^2.17.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.208"
+  }
+}

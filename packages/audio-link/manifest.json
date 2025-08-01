@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Audio Links",
+  "version": "0.0.1",
+  "description": "An extension to create text fragment links for audio elements.",
+  "permissions": ["storage", "activeTab", "scripting", "offscreen"],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"]
+    }
+  ]
+}

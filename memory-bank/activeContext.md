@@ -4,10 +4,13 @@ This document tracks the current work focus, recent changes, and next steps. It'
 
 ## Current Focus
 
-The current focus is on the new `image-links` package.
+The current focus is on the new `audio-link` package.
 
 ## Recent Changes
 
+- **`audio-link` package**: Created a new extension that allows users to create text fragment links for audio elements.
+- **`audio-link` package**: Uses the Whisper model from Hugging Face, run locally in the browser using ONNX Runtime Web and Transformers.js.
+- **`audio-link` package**: Implemented the `chrome.offscreen` API to run the ML model.
 - **`image-links` package**: Created a new extension that allows users to click on any object within an image to get a direct link to that object.
 - **`image-links` package**: Uses the SAM2 (Segment Anything Model 2) from Hugging Face, run locally in the browser using ONNX Runtime Web.
 - **`image-links` package**: Implemented the `chrome.offscreen` API to run the ML model, as WebGPU is not available in service workers.
@@ -32,6 +35,7 @@ The current focus is on the new `image-links` package.
 
 ## Next Steps
 
+- Test the `audio-link` extension thoroughly.
 - Test the `image-links` extension thoroughly.
 - Test the `merge` extension thoroughly.
 - Test the `tab-group-summary` extension thoroughly.
