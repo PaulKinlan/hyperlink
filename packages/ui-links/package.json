@@ -1,0 +1,43 @@
+{
+  "name": "ui-links",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A browser extension to stream UI components from one page to another.",
+  "scripts": {
+    "build": "wireit",
+    "dev": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "esbuild src/background.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/**/*.js"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "dev": {
+      "command": "http-server example/ ",
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "dependencies": [
+        "build"
+      ],
+      "output": [
+        "dist/**/*.js"
+      ],
+      "clean": "if-file-deleted"
+    }
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "typescript": "^5.5.2",
+    "wireit": "^0.14.4",
+    "http-server": "^14.1.1"
+  }
+}

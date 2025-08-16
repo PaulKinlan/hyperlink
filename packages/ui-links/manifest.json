@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "UI Links",
+  "version": "0.1",
+  "description": "An extension to show a UI from a link on the current page.",
+  "permissions": ["contextMenus", "scripting"],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"]
+    }
+  ],
+  "host_permissions": ["<all_urls>"]
+}
