@@ -180,10 +180,11 @@ export const ForeignHtmlRenderer = function (styleSheets) {
     }
 
     // we have to re-home some css variables
-    cssStyles = cssStyles.replace(
-      ':where(html)',
-      ':where(div[xmlns="http://www.w3.org/1999/xhtml"])',
-    );
+    cssStyles = cssStyles.replace(':where(html)', ':where(:scope)');
+
+    cssStyles = `@scope { 
+      ${cssStyles} 
+    }`;
 
     const styleElem = document.createElement('style');
     styleElem.innerHTML = cssStyles;
@@ -265,6 +266,10 @@ export const ForeignHtmlRenderer = function (styleSheets) {
         ':where(html)',
         ':where(div[xmlns="http://www.w3.org/1999/xhtml"])',
       );
+
+      cssStyles = `@scope { 
+        ${cssStyles} 
+      }`;
 
       const styleElem = document.createElement('style');
       styleElem.innerHTML = cssStyles;
