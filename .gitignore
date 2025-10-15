@@ -6,3 +6,5 @@ node_modules/
 *.log
 *.tsbuildinfo
 *.wasm
+.DS_Store
+*.zip

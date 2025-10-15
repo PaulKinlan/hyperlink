@@ -4,7 +4,8 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "wireit"
+    "build": "wireit",
+    "zip": "wireit"
   },
   "wireit": {
     "manifest": {
@@ -52,6 +53,19 @@
         "html",
         "manifest",
         "../shared:build"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "zip": {
+      "command": "cd dist && zip -r ../merge.zip .",
+      "files": [
+        "dist/**"
+      ],
+      "output": [
+        "merge.zip"
+      ],
+      "dependencies": [
+        "build"
       ],
       "clean": "if-file-deleted"
     }
