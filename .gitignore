@@ -1,5 +1,8 @@
 .wireit/
 dist/
+models/
+wasm/
 node_modules/
 *.log
 *.tsbuildinfo
+*.wasm

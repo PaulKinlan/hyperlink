@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Image Links",
+  "name": "Image Link",
   "version": "0.0.1",
   "description": "An extension to make every part of an image on the page clickable and discoverable.",
   "permissions": ["storage", "activeTab", "scripting", "offscreen"],
   "background": {
+    "type": "module",
     "service_worker": "dist/index.js"
   },
   "content_scripts": [
@@ -13,8 +14,14 @@
       "js": ["dist/content.js"]
     }
   ],
-  "host_permissions": ["https://huggingface.co/", "https://cdn.jsdelivr.net"],
+  "web_accessible_resources": [
+    {
+      "resources": ["models/*", "wasm/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "host_permissions": ["https://huggingface.co/"],
   "content_security_policy": {
-    "extension_pages": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://huggingface.co https://*.hf.co; https://cdn.jsdelivr.net http://localhost:* http://127.0.0.1:*"
+    "extension_pages": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://huggingface.co https://*.hf.co;"
   }
 }

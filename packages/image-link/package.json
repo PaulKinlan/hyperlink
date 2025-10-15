@@ -1,0 +1,54 @@
+{
+  "name": "@hyperlink-experiments/image-link",
+  "description": "An extension to make every part of an image on the page clickable and discoverable.",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/content.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "scripts:download-wasm": {
+      "command": "node ./scripts/download-wasm-files.mjs",
+      "files": [
+        "scripts/download-wasm-files.mjs",
+        "package.json"
+      ],
+      "output": [
+        "dist/wasm/**"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "scripts:download-models": {
+      "command": "node ./scripts/download-model-files.mjs",
+      "files": [
+        "scripts/download-model-files.mjs",
+        "package.json"
+      ],
+      "output": [
+        "dist/models/**"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "build": {
+      "command": "esbuild src/index.ts src/content.ts src/offscreen.ts --bundle --platform=browser --outdir=dist --format=esm --target=chrome130",
+      "files": [
+        "src/**/*.ts",
+        "manifest.json",
+        "!dist/wasm/**"
+      ],
+      "output": [
+        "dist"
+      ],
+      "clean": "if-file-deleted",
+      "dependencies": [
+        "scripts:download-wasm",
+        "scripts:download-models"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@huggingface/transformers": "^3.7.2",
+    "@types/chrome": "^0.0.208"
+  }
+}

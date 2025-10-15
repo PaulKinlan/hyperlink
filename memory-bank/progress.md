@@ -22,6 +22,7 @@ This document tracks what works, what's left to build, and the current status of
 - The `merge` package now has a click listener that detects when a link is clicked with the Option or Control key pressed, and triggers the merge process.
 - The `image-links` package is implemented. It uses the SAM2 model to allow users to select objects within images and get a direct link to them.
 - The `audio-link` package is implemented. It uses the Whisper model to allow users to create text fragment links for audio elements.
+- The `ui-links` package is implemented. It uses the `chrome.tabCapture` API to stream a UI component from a linked page onto the current page.
 
 ## What's Left to Build
 
@@ -31,7 +32,7 @@ This document tracks what works, what's left to build, and the current status of
 
 ## Current Status
 
-The `summary`, `tab-group-summary`, `merge`, `image-links`, and `audio-link` experiments are ready for testing and refinement.
+The `summary`, `tab-group-summary`, `merge`, `image-links`, `audio-link`, and `ui-links` experiments are ready for testing and refinement.
 
 ## Known Issues
 

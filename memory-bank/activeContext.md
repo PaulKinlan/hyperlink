@@ -4,10 +4,14 @@ This document tracks the current work focus, recent changes, and next steps. It'
 
 ## Current Focus
 
-The current focus is on the new `audio-link` package.
+The current focus is on the new `ui-links` package.
 
 ## Recent Changes
 
+- **`ui-links` package**: Created a new extension that allows users to stream a UI component from a linked page onto the current page.
+- **`ui-links` package**: Uses the `chrome.tabCapture` API to get a `MediaStream` of a target tab.
+- **`ui-links` package**: A background script manages opening the target tab, getting the stream, and sending the stream ID to the content script.
+- **`ui-links` package**: A content script receives the stream and displays it in a floating video element, cropped to the dimensions of the target element.
 - **`audio-link` package**: Created a new extension that allows users to create text fragment links for audio elements.
 - **`audio-link` package**: Uses the Whisper model from Hugging Face, run locally in the browser using ONNX Runtime Web and Transformers.js.
 - **`audio-link` package**: Implemented the `chrome.offscreen` API to run the ML model.
@@ -35,6 +39,7 @@ The current focus is on the new `audio-link` package.
 
 ## Next Steps
 
+- Test the `ui-links` extension thoroughly.
 - Test the `audio-link` extension thoroughly.
 - Test the `image-links` extension thoroughly.
 - Test the `merge` extension thoroughly.
