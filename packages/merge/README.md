@@ -186,6 +186,17 @@ The built extension will be in the `dist/` directory.
 - Turndown (HTML to Markdown conversion)
 - Chrome Extension APIs
 
+## Privacy
+
+We take your privacy seriously. The extension:
+
+- Stores your API keys locally in Chrome's secure storage
+- Does NOT collect or track any personal information
+- Does NOT send data to our servers (we don't have any)
+- Only sends content to the AI provider you explicitly configure
+
+For full details, see our [Privacy Policy](PRIVACY.md).
+
 ## License
 
 MIT
