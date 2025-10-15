@@ -7,9 +7,40 @@
     "build": "wireit"
   },
   "wireit": {
-    "build": {
-      "command": "rm -rf dist && esbuild src/index.ts src/options.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+    "manifest": {
+      "command": "mkdir -p dist && cp manifest.json dist/",
       "files": [
+        "manifest.json"
+      ],
+      "output": [
+        "dist/manifest.json"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "html": {
+      "command": "mkdir -p dist && cp options.html dist/",
+      "files": [
+        "options.html"
+      ],
+      "output": [
+        "dist/options.html"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "icons": {
+      "command": "mkdir -p dist/icons && cp -R icons/* dist/icons/",
+      "files": [
+        "icons/*.png"
+      ],
+      "output": [
+        "dist/icons/**"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "build": {
+      "command": "esbuild src/index.ts src/options.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "files": [
+        "icons/**/*.png",
         "src/**/*.ts",
         "manifest.json"
       ],
@@ -17,13 +48,21 @@
         "dist"
       ],
       "dependencies": [
+        "icons",
+        "html",
+        "manifest",
         "../shared:build"
-      ]
+      ],
+      "clean": "if-file-deleted"
     }
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.0.0",
+    "@ai-sdk/google": "^1.0.0",
+    "@ai-sdk/openai": "^1.0.0",
     "@google/genai": "1.10.0",
     "@hyperlink-experiments/shared": "1.0.0",
+    "ai": "^4.0.0",
     "turndown": "^7.1.2"
   },
   "devDependencies": {

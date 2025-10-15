@@ -6,16 +6,22 @@
   "action": {
     "default_title": "Merge"
   },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
   "background": {
-    "service_worker": "dist/index.js"
+    "service_worker": "index.js"
   },
   "options_page": "options.html",
-  "permissions": ["storage", "scripting", "activeTab"],
+  "permissions": ["storage", "scripting", "activeTab", "contextMenus"],
   "host_permissions": ["https://*/", "http://*/"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["dist/content.js"]
+      "js": ["content.js"]
     }
   ]
 }
