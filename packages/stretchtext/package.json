@@ -4,11 +4,55 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "wireit"
+    "build": "wireit",
+    "zip": "wireit"
   },
   "wireit": {
+    "manifest": {
+      "command": "mkdir -p dist && cp manifest.json dist/",
+      "files": [
+        "manifest.json"
+      ],
+      "output": [
+        "dist/manifest.json"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "html": {
+      "command": "mkdir -p dist && cp options.html dist/",
+      "files": [
+        "options.html"
+      ],
+      "output": [
+        "dist/options.html"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "icons": {
+      "command": "mkdir -p dist/icons && cp -R icons/* dist/icons/",
+      "files": [
+        "icons/*.png"
+      ],
+      "output": [
+        "dist/icons/**"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "zip": {
+      "command": "cd dist && zip -r ../merge.zip .",
+      "files": [
+        "dist/**"
+      ],
+      "output": [
+        "merge.zip"
+      ],
+      "dependencies": [
+        "build"
+      ],
+      "clean": "if-file-deleted"
+    },
     "build": {
-      "command": "rm -rf dist && esbuild src/index.ts src/options.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "command": "esbuild src/index.ts src/options.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
       "files": [
         "src/**/*.ts",
         "manifest.json"
@@ -17,6 +61,9 @@
         "dist"
       ],
       "dependencies": [
+        "html",
+        "icons",
+        "manifest",
         "../shared:build"
       ]
     }

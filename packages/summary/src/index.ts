@@ -1,6 +1,15 @@
-import { GoogleGenAI } from '@google/genai';
+import {
+  StorageManager,
+  ProviderFactory,
+  type ProviderConfig,
+} from '@hyperlink-experiments/shared';
 
 const OFFSCREEN_DOCUMENT_PATH = 'offscreen.html';
+const storageManager = new StorageManager('summary');
+
+async function getActiveProvider(): Promise<ProviderConfig | null> {
+  return await storageManager.getActiveProvider();
+}
 
 chrome.runtime.onMessage.addListener(async (request, sender) => {
   if (request.action === 'summarize') {
@@ -21,7 +30,7 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
     chrome.runtime.sendMessage({
       action: 'getMarkdown',
       html,
-      senderTabId: sender.tab.id,
+      senderTabId: sender.tab?.id,
     });
   }
 });
@@ -32,53 +41,51 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
     await chrome.offscreen.closeDocument();
 
     // Now summarize the markdown
-    chrome.storage.sync.get('apiKey', async (data) => {
-      if (data.apiKey) {
-        const genAI = new GoogleGenAI({ apiKey: data.apiKey });
-        const model = 'gemini-2.0-flash';
-        const config = { tools: [], responseMimeType: 'text/plain' };
-        const contents = [
-          {
-            role: 'user',
-            parts: [
-              {
-                text: `Summarize the following article:\n\n${request.markdown}`,
-              },
-            ],
-          },
-        ];
+    const providerConfig = await getActiveProvider();
 
-        try {
-          const result = await genAI.models.generateContent({
-            model,
-            config,
-            contents,
-          });
-          const summary = result.text;
-          if (sender.id == chrome.runtime.id) {
-            chrome.tabs.sendMessage(request.senderTabId, {
-              action: 'summary',
-              summary,
-            });
-          }
-        } catch (error) {
-          console.error('Error summarizing:', error);
-          if (sender.tab?.id) {
-            chrome.tabs.sendMessage(request.senderId, {
-              action: 'summary',
-              summary: 'Error summarizing content.',
-            });
-          }
-        }
-      } else {
-        if (sender.tab?.id) {
-          chrome.tabs.sendMessage(sender.tab.id, {
-            action: 'summary',
-            summary: 'API key not set. Please set it in the options page.',
-          });
-        }
+    if (!providerConfig) {
+      if (request.senderTabId) {
+        chrome.tabs.sendMessage(request.senderTabId, {
+          action: 'summary',
+          summary:
+            'No active provider configured. Please configure a provider in the options page.',
+        });
       }
-    });
+      return;
+    }
+
+    if (!providerConfig.enabled) {
+      if (request.senderTabId) {
+        chrome.tabs.sendMessage(request.senderTabId, {
+          action: 'summary',
+          summary:
+            'Active provider is disabled. Please enable it in the options page.',
+        });
+      }
+      return;
+    }
+
+    try {
+      const provider = ProviderFactory.create(providerConfig);
+      const summary = await provider.generateText(
+        `Summarize the following article:\n\n${request.markdown}`,
+      );
+
+      if (sender.id === chrome.runtime.id && request.senderTabId) {
+        chrome.tabs.sendMessage(request.senderTabId, {
+          action: 'summary',
+          summary,
+        });
+      }
+    } catch (error) {
+      console.error('Error summarizing:', error);
+      if (request.senderTabId) {
+        chrome.tabs.sendMessage(request.senderTabId, {
+          action: 'summary',
+          summary: `Error summarizing content: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        });
+      }
+    }
   }
 });
 

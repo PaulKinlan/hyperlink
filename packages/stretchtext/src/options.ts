@@ -1,21 +1,7 @@
-const form = document.querySelector('form');
-const apiKeyInput = document.querySelector<HTMLInputElement>('#apiKey');
+import { OptionsUI } from '@hyperlink-experiments/shared';
 
-if (apiKeyInput) {
-  // Load the saved API key when the options page is opened
-  chrome.storage.sync.get('apiKey', (data) => {
-    if (data.apiKey) {
-      apiKeyInput.value = data.apiKey;
-    }
-  });
-}
+// Initialize the options UI with the extension name
+const optionsUI = new OptionsUI('stretchtext', 'Stretchtext');
 
-if (form && apiKeyInput) {
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const apiKey = apiKeyInput.value;
-    chrome.storage.sync.set({ apiKey }, () => {
-      console.log('API key saved');
-    });
-  });
-}
+// Initialize on page load
+optionsUI.init();

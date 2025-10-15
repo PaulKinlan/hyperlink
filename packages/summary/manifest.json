@@ -7,7 +7,7 @@
     "default_title": "Summary"
   },
   "background": {
-    "service_worker": "dist/index.js"
+    "service_worker": "index.js"
   },
   "options_page": "options.html",
   "permissions": ["storage", "offscreen"],
@@ -15,7 +15,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["dist/content.js"]
+      "js": ["content.js"]
     }
   ]
 }

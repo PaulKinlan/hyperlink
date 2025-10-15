@@ -5,12 +5,12 @@
   "description": "An extension to track backlinks and navigation paths.",
   "permissions": ["storage", "contextMenus", "tabs"],
   "background": {
-    "service_worker": "dist/background.js"
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["dist/content.js"]
+      "js": ["content.js"]
     }
   ]
 }

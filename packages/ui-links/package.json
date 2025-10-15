@@ -5,9 +5,53 @@
   "description": "A browser extension to stream UI components from one page to another.",
   "scripts": {
     "build": "wireit",
-    "dev": "wireit"
+    "dev": "wireit",
+    "zip": "wireit"
   },
   "wireit": {
+    "manifest": {
+      "command": "mkdir -p dist && cp manifest.json dist/",
+      "files": [
+        "manifest.json"
+      ],
+      "output": [
+        "dist/manifest.json"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "html": {
+      "command": "mkdir -p dist && cp options.html dist/",
+      "files": [
+        "options.html"
+      ],
+      "output": [
+        "dist/options.html"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "icons": {
+      "command": "mkdir -p dist/icons && cp -R icons/* dist/icons/",
+      "files": [
+        "icons/*.png"
+      ],
+      "output": [
+        "dist/icons/**"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "zip": {
+      "command": "cd dist && zip -r ../merge.zip .",
+      "files": [
+        "dist/**"
+      ],
+      "output": [
+        "merge.zip"
+      ],
+      "dependencies": [
+        "build"
+      ],
+      "clean": "if-file-deleted"
+    },
     "build": {
       "command": "esbuild src/background.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
       "files": [
@@ -16,6 +60,11 @@
       ],
       "output": [
         "dist/**/*.js"
+      ],
+      "dependencies": [
+        "../shared:build",
+        "icons",
+        "manifest"
       ],
       "clean": "if-file-deleted"
     },

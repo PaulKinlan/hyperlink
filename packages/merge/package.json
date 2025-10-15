@@ -38,6 +38,19 @@
       ],
       "clean": "if-file-deleted"
     },
+    "zip": {
+      "command": "cd dist && zip -r ../merge.zip .",
+      "files": [
+        "dist/**"
+      ],
+      "output": [
+        "merge.zip"
+      ],
+      "dependencies": [
+        "build"
+      ],
+      "clean": "if-file-deleted"
+    },
     "build": {
       "command": "esbuild src/index.ts src/options.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
       "files": [
@@ -53,19 +66,6 @@
         "html",
         "manifest",
         "../shared:build"
-      ],
-      "clean": "if-file-deleted"
-    },
-    "zip": {
-      "command": "cd dist && zip -r ../merge.zip .",
-      "files": [
-        "dist/**"
-      ],
-      "output": [
-        "merge.zip"
-      ],
-      "dependencies": [
-        "build"
       ],
       "clean": "if-file-deleted"
     }

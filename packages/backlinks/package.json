@@ -8,7 +8,7 @@
   },
   "wireit": {
     "build": {
-      "command": "rm -rf dist && esbuild src/background.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "command": "esbuild src/background.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
       "files": [
         "src/**/*.ts",
         "manifest.json"

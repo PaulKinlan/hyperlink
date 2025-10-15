@@ -1,8 +1,18 @@
-import { GoogleGenAI } from '@google/genai';
+import {
+  StorageManager,
+  ProviderFactory,
+  type ProviderConfig,
+} from '@hyperlink-experiments/shared';
+
+const storageManager = new StorageManager('tab-group-summary');
 
 let creating: Promise<void> | null;
 const creatingTabs = new Map<number, Promise<chrome.tabs.Tab>>();
 const activeSettingsTabId = new Map<number, number>(); // TabGroup to Tab ID mapping
+
+async function getActiveProvider(): Promise<ProviderConfig | null> {
+  return await storageManager.getActiveProvider();
+}
 
 chrome.tabGroups.onUpdated.addListener(async (tabGroup) => {
   // When a tab is added to a group, this listener is triggered.
@@ -127,39 +137,35 @@ async function getSummary(tab: chrome.tabs.Tab): Promise<string> {
         // Remove the listener
         chrome.runtime.onMessage.removeListener(markdownListener);
 
-        // Now summarize the markdown
-        chrome.storage.sync.get('apiKey', async (data) => {
-          if (data.apiKey) {
-            const genAI = new GoogleGenAI({ apiKey: data.apiKey });
-            const model = 'gemini-2.0-flash';
-            const config = { tools: [], responseMimeType: 'text/plain' };
-            const contents = [
-              {
-                role: 'user',
-                parts: [
-                  {
-                    text: `Summarize the following article:\n\n${request.markdown}`,
-                  },
-                ],
-              },
-            ];
+        // Get the active provider configuration
+        const providerConfig = await getActiveProvider();
 
-            try {
-              const result = await genAI.models.generateContent({
-                model,
-                config,
-                contents,
-              });
-              const summary = result.text;
-              resolve(summary || 'No summary available.');
-            } catch (error) {
-              console.error('Error summarizing:', error);
-              resolve('');
-            }
-          } else {
-            resolve('API key not set.');
-          }
-        });
+        if (!providerConfig) {
+          resolve(
+            'No active provider configured. Please configure a provider in the options page.',
+          );
+          return;
+        }
+
+        if (!providerConfig.enabled) {
+          resolve(
+            'Active provider is disabled. Please enable it in the options page.',
+          );
+          return;
+        }
+
+        try {
+          const provider = ProviderFactory.create(providerConfig);
+          const summary = await provider.generateText(
+            `Summarize the following article:\n\n${request.markdown}`,
+          );
+          resolve(summary || 'No summary available.');
+        } catch (error) {
+          console.error('Error summarizing:', error);
+          resolve(
+            `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
       }
     };
 

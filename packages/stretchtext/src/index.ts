@@ -1,59 +1,74 @@
-import { GoogleGenAI } from '@google/genai';
+import {
+  StorageManager,
+  ProviderFactory,
+  type ProviderConfig,
+} from '@hyperlink-experiments/shared';
+
+const storageManager = new StorageManager('stretchtext');
+
+async function getActiveProvider(): Promise<ProviderConfig | null> {
+  return await storageManager.getActiveProvider();
+}
 
 chrome.runtime.onMessage.addListener(async (request, sender) => {
   if (request.action === 'expand' || request.action === 'summarize') {
-    chrome.storage.sync.get('apiKey', async (data) => {
-      if (data.apiKey) {
-        const genAI = new GoogleGenAI({ apiKey: data.apiKey });
-        const model = 'gemini-2.5-flash';
-        const config = { tools: [], responseMimeType: 'text/plain' };
-        const contents = [
-          {
-            role: 'user',
-            parts: [
-              {
-                text:
-                  request.action === 'expand'
-                    ? `Expand the following text:\n\n${request.text}`
-                    : `Summarize the following text:\n\n${request.text}`,
-              },
-            ],
-          },
-        ];
+    const providerConfig = await getActiveProvider();
 
-        try {
-          const result = await genAI.models.generateContent({
-            model,
-            config,
-            contents,
-          });
-          const text = result.text;
-          chrome.tabs.sendMessage(sender.tab.id, {
-            action: 'replace',
-            text,
-            url: request.url,
-            textFragment: request.textFragment,
-            zoomLevel: request.zoomLevel,
-          });
-        } catch (error) {
-          console.error(`Error with Gemini API: ${error}`);
-          chrome.tabs.sendMessage(sender.tab.id, {
-            action: 'replace',
-            text: `Error: ${error.message}`,
-            url: request.url,
-            textFragment: request.textFragment,
-            zoomLevel: request.zoomLevel,
-          });
-        }
-      } else {
+    if (!providerConfig) {
+      if (sender.tab?.id) {
         chrome.tabs.sendMessage(sender.tab.id, {
           action: 'replace',
-          text: 'API key not set. Please set it in the options page.',
+          text: 'No active provider configured. Please configure a provider in the options page.',
           url: request.url,
           textFragment: request.textFragment,
           zoomLevel: request.zoomLevel,
         });
       }
-    });
+      return;
+    }
+
+    if (!providerConfig.enabled) {
+      if (sender.tab?.id) {
+        chrome.tabs.sendMessage(sender.tab.id, {
+          action: 'replace',
+          text: 'Active provider is disabled. Please enable it in the options page.',
+          url: request.url,
+          textFragment: request.textFragment,
+          zoomLevel: request.zoomLevel,
+        });
+      }
+      return;
+    }
+
+    try {
+      const provider = ProviderFactory.create(providerConfig);
+      const prompt =
+        request.action === 'expand'
+          ? `Expand the following text:\n\n${request.text}`
+          : `Summarize the following text:\n\n${request.text}`;
+
+      const text = await provider.generateText(prompt);
+
+      if (sender.tab?.id) {
+        chrome.tabs.sendMessage(sender.tab.id, {
+          action: 'replace',
+          text,
+          url: request.url,
+          textFragment: request.textFragment,
+          zoomLevel: request.zoomLevel,
+        });
+      }
+    } catch (error) {
+      console.error(`Error with AI provider: ${error}`);
+      if (sender.tab?.id) {
+        chrome.tabs.sendMessage(sender.tab.id, {
+          action: 'replace',
+          text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          url: request.url,
+          textFragment: request.textFragment,
+          zoomLevel: request.zoomLevel,
+        });
+      }
+    }
   }
 });

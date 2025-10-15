@@ -2,11 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
-import type { ProviderConfig } from './types';
-
-export interface ProviderInstance {
-  generateText: (prompt: string) => Promise<string>;
-}
+import type { ProviderConfig, ProviderInstance } from './types';
 
 export class ProviderFactory {
   static create(config: ProviderConfig): ProviderInstance {

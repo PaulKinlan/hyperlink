@@ -2,6 +2,7 @@
   "name": "@hyperlink-experiments/shared",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "build": "wireit"
   },
@@ -15,5 +16,11 @@
         "dist"
       ]
     }
+  },
+  "dependencies": {
+    "ai": "^4.0.0",
+    "@ai-sdk/openai": "^1.0.0",
+    "@ai-sdk/anthropic": "^1.0.0",
+    "@ai-sdk/google": "^1.0.0"
   }
 }

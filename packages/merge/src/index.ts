@@ -1,21 +1,13 @@
-import { ProviderFactory } from './providers';
-import type { MergeSettings, ProviderConfig } from './types';
-import { DEFAULT_SETTINGS } from './types';
+import {
+  ProviderFactory,
+  StorageManager,
+  type ProviderConfig,
+} from '@hyperlink-experiments/shared';
 
-async function getSettings(): Promise<MergeSettings> {
-  return new Promise((resolve) => {
-    chrome.storage.sync.get(['mergeSettings'], (data) => {
-      resolve(data.mergeSettings || DEFAULT_SETTINGS);
-    });
-  });
-}
+const storageManager = new StorageManager('merge');
 
 async function getActiveProvider(): Promise<ProviderConfig | null> {
-  const settings = await getSettings();
-  if (!settings.activeProviderId) {
-    return null;
-  }
-  return settings.providers[settings.activeProviderId] || null;
+  return await storageManager.getActiveProvider();
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -158,42 +150,5 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       action: 'mergeFromContextMenu',
       linkUrl: info.linkUrl,
     });
-  }
-});
-
-// Migration: Convert old apiKey to new settings format
-chrome.runtime.onInstalled.addListener(async () => {
-  const oldData = await new Promise<{ apiKey?: string }>((resolve) => {
-    chrome.storage.sync.get(['apiKey'], (data) => resolve(data));
-  });
-
-  if (oldData.apiKey) {
-    const settings = await getSettings();
-
-    // Only migrate if no providers exist
-    if (Object.keys(settings.providers).length === 0) {
-      const providerId = `google-${Date.now()}`;
-      const newSettings: MergeSettings = {
-        activeProviderId: providerId,
-        providers: {
-          [providerId]: {
-            id: providerId,
-            name: 'Google Gemini (Migrated)',
-            type: 'google',
-            apiKey: oldData.apiKey,
-            model: 'gemini-2.5-flash',
-            enabled: true,
-            createdAt: Date.now(),
-          },
-        },
-      };
-
-      await chrome.storage.sync.set({ mergeSettings: newSettings });
-
-      // Clean up old key
-      await chrome.storage.sync.remove('apiKey');
-
-      console.log('Migrated old API key to new settings format');
-    }
   }
 });
