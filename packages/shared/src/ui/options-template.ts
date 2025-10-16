@@ -3,6 +3,7 @@ export function getOptionsHTML(extensionName: string): string {
     <div class="sidebar">
       <div class="sidebar-header">
         <h1>Providers</h1>
+        <div class="sidebar-help">Click to edit • Double-click to set as active</div>
       </div>
       <div class="provider-list" id="providerList">
         <!-- Provider items will be dynamically added here -->
@@ -33,6 +34,7 @@ export function getOptionsHTML(extensionName: string): string {
               <option value="openai">OpenAI</option>
               <option value="anthropic">Anthropic (Claude)</option>
               <option value="google">Google (Gemini)</option>
+              <option value="chrome">Chrome (Built-in)</option>
               <option value="custom">Custom Endpoint</option>
             </select>
           </div>
@@ -43,10 +45,14 @@ export function getOptionsHTML(extensionName: string): string {
             <div class="help-text">A friendly name to identify this provider</div>
           </div>
 
+          <button class="btn btn-activate" id="activateBtn" style="display: none; margin-bottom: 20px;">
+            Set as Active Provider
+          </button>
+
           <div class="form-group">
             <label for="apiKey">API Key</label>
             <input type="password" id="apiKey" placeholder="Enter your API key" />
-            <div class="help-text">Your API key will be stored securely</div>
+            <div class="help-text">Your API key will be stored in Chrome's synchronised storage, and will be accessible only to this extension.</div>
           </div>
 
           <div class="form-group">

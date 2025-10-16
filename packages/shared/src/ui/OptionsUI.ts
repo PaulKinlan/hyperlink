@@ -3,7 +3,11 @@ import type {
   ProviderConfig,
   ProviderType,
 } from '../providers/types';
-import { DEFAULT_MODELS } from '../providers/models';
+import {
+  DEFAULT_MODELS,
+  REQUIRES_API_KEY,
+  REQUIRES_MODEL_SELECTION,
+} from '../providers/models';
 import { StorageManager } from '../providers/storage';
 import { ProviderFactory } from '../providers/factory';
 import { getOptionsHTML } from './options-template';
@@ -67,6 +71,7 @@ export class OptionsUI {
     const saveBtn = document.getElementById('saveBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const deleteBtn = document.getElementById('deleteBtn');
+    const activateBtn = document.getElementById('activateBtn');
     const providerList = document.getElementById('providerList');
 
     addBtn?.addEventListener('click', () => this.handleAddProvider());
@@ -77,6 +82,7 @@ export class OptionsUI {
     saveBtn?.addEventListener('click', () => this.handleSave());
     cancelBtn?.addEventListener('click', () => this.handleCancel());
     deleteBtn?.addEventListener('click', () => this.handleDelete());
+    activateBtn?.addEventListener('click', () => this.handleActivate());
     providerList?.addEventListener('dblclick', (e) =>
       this.handleProviderDoubleClick(e),
     );
@@ -99,6 +105,10 @@ export class OptionsUI {
       item.className = `provider-item ${isActive ? 'active' : ''}`;
       item.dataset.id = id;
 
+      const radioIndicator = document.createElement('div');
+      radioIndicator.className = 'radio-indicator';
+      radioIndicator.textContent = isActive ? '◉' : '○';
+
       const info = document.createElement('div');
       info.className = 'provider-info';
 
@@ -120,6 +130,7 @@ export class OptionsUI {
       dot.className = `status-dot ${provider.enabled ? '' : 'inactive'}`;
 
       status.appendChild(dot);
+      item.appendChild(radioIndicator);
       item.appendChild(info);
       item.appendChild(status);
 
@@ -133,6 +144,7 @@ export class OptionsUI {
       openai: 'OpenAI',
       anthropic: 'Anthropic',
       google: 'Google',
+      chrome: 'Chrome',
       custom: 'Custom',
     };
     return labels[type] || type;
@@ -168,14 +180,17 @@ export class OptionsUI {
     if (formTitle) formTitle.textContent = 'Edit Provider';
     if (providerTypeSelect) providerTypeSelect.value = provider.type;
     if (providerNameInput) providerNameInput.value = provider.name;
-    if (apiKeyInput) apiKeyInput.value = provider.apiKey;
+    if (apiKeyInput) apiKeyInput.value = provider.apiKey || '';
     if (baseUrlInput) baseUrlInput.value = provider.baseUrl || '';
     if (enabledCheckbox) enabledCheckbox.checked = provider.enabled;
 
     this.updateModelOptions(provider.type);
-    if (modelSelect) modelSelect.value = provider.model;
+    if (modelSelect) modelSelect.value = provider.model || '';
 
     this.updateCustomUrlVisibility(provider.type);
+    this.updateApiKeyVisibility(provider.type);
+    this.updateModelVisibility(provider.type);
+    this.updateActivateButtonVisibility();
     if (deleteBtn) deleteBtn.style.display = 'block';
     if (statusMessage) statusMessage.style.display = 'none';
   }
@@ -242,6 +257,32 @@ export class OptionsUI {
     }
   }
 
+  private updateApiKeyVisibility(type: ProviderType | ''): void {
+    const apiKeyGroup = document
+      .getElementById('apiKey')
+      ?.closest('.form-group') as HTMLElement;
+    if (!apiKeyGroup) return;
+
+    if (type && !REQUIRES_API_KEY[type as ProviderType]) {
+      apiKeyGroup.style.display = 'none';
+    } else {
+      apiKeyGroup.style.display = 'block';
+    }
+  }
+
+  private updateModelVisibility(type: ProviderType | ''): void {
+    const modelGroup = document
+      .getElementById('model')
+      ?.closest('.form-group') as HTMLElement;
+    if (!modelGroup) return;
+
+    if (type && !REQUIRES_MODEL_SELECTION[type as ProviderType]) {
+      modelGroup.style.display = 'none';
+    } else {
+      modelGroup.style.display = 'block';
+    }
+  }
+
   private handleAddProvider(): void {
     this.isNewProvider = true;
     this.currentEditingId = null;
@@ -283,6 +324,8 @@ export class OptionsUI {
     const type = (e.target as HTMLSelectElement).value as ProviderType | '';
     this.updateModelOptions(type);
     this.updateCustomUrlVisibility(type);
+    this.updateApiKeyVisibility(type);
+    this.updateModelVisibility(type);
 
     const providerNameInput = document.getElementById(
       'providerName',
@@ -305,12 +348,23 @@ export class OptionsUI {
     const testBtn = document.getElementById('testBtn') as HTMLButtonElement;
 
     const type = providerTypeSelect?.value as ProviderType;
-    const apiKey = apiKeyInput?.value.trim();
-    const model = modelSelect?.value;
+    const apiKey = apiKeyInput?.value.trim() || undefined;
+    const model = modelSelect?.value || undefined;
     const baseUrl = baseUrlInput?.value.trim() || undefined;
 
-    if (!type || !apiKey || !model) {
-      this.showStatus('Please fill in all required fields', 'error');
+    // Validation based on provider requirements
+    if (!type) {
+      this.showStatus('Please select a provider type', 'error');
+      return;
+    }
+
+    if (REQUIRES_API_KEY[type] && !apiKey) {
+      this.showStatus('API key is required for this provider', 'error');
+      return;
+    }
+
+    if (REQUIRES_MODEL_SELECTION[type] && !model) {
+      this.showStatus('Model selection is required for this provider', 'error');
       return;
     }
 
@@ -378,12 +432,12 @@ export class OptionsUI {
 
     const type = providerTypeSelect?.value as ProviderType;
     const name = providerNameInput?.value.trim();
-    const apiKey = apiKeyInput?.value.trim();
-    const model = modelSelect?.value;
+    const apiKey = apiKeyInput?.value.trim() || undefined;
+    const model = modelSelect?.value || undefined;
     const baseUrl = baseUrlInput?.value.trim() || undefined;
     const enabled = enabledCheckbox?.checked ?? true;
 
-    // Validation
+    // Validation based on provider requirements
     if (!type) {
       this.showStatus('Please select a provider type', 'error');
       return;
@@ -392,12 +446,12 @@ export class OptionsUI {
       this.showStatus('Please enter a provider name', 'error');
       return;
     }
-    if (!apiKey) {
-      this.showStatus('Please enter an API key', 'error');
+    if (REQUIRES_API_KEY[type] && !apiKey) {
+      this.showStatus('API key is required for this provider', 'error');
       return;
     }
-    if (!model) {
-      this.showStatus('Please select or enter a model', 'error');
+    if (REQUIRES_MODEL_SELECTION[type] && !model) {
+      this.showStatus('Model selection is required for this provider', 'error');
       return;
     }
     if (type === 'custom' && !baseUrl) {
@@ -444,6 +498,7 @@ export class OptionsUI {
 
       this.renderProviderList();
       this.updateProviderListUI();
+      this.updateActivateButtonVisibility();
 
       this.showStatus('✓ Provider saved successfully!', 'success');
       if (formTitle) formTitle.textContent = 'Edit Provider';
@@ -503,6 +558,17 @@ export class OptionsUI {
     }
   }
 
+  private async handleActivate(): Promise<void> {
+    if (!this.currentEditingId) return;
+
+    this.settings.activeProviderId = this.currentEditingId;
+    await this.saveSettings();
+
+    this.renderProviderList();
+    this.updateActivateButtonVisibility();
+    this.showStatus('✓ Active provider updated', 'success');
+  }
+
   private async handleProviderDoubleClick(e: Event): Promise<void> {
     const item = (e.target as HTMLElement).closest(
       '.provider-item',
@@ -516,7 +582,18 @@ export class OptionsUI {
     await this.saveSettings();
 
     this.renderProviderList();
+    this.updateActivateButtonVisibility();
     this.showStatus('✓ Active provider updated', 'success');
+  }
+
+  private updateActivateButtonVisibility(): void {
+    const activateBtn = document.getElementById('activateBtn');
+    if (!activateBtn) return;
+
+    // Show button only if editing an existing provider that is NOT active
+    const isActive = this.currentEditingId === this.settings.activeProviderId;
+    activateBtn.style.display =
+      !this.isNewProvider && !isActive ? 'block' : 'none';
   }
 
   private showStatus(

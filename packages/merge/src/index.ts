@@ -83,10 +83,7 @@ ${targetWindow}
     })();
     return true; // Required for async sendResponse
   }
-  return false;
-});
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'openLinkForMarkdown') {
     (async () => {
       try {

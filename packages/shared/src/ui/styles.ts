@@ -34,6 +34,13 @@ export function getOptionsStyles(): string {
       color: #333;
     }
 
+    .sidebar-help {
+      font-size: 11px;
+      color: #999;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
     .provider-list {
       flex: 1;
       overflow-y: auto;
@@ -45,7 +52,7 @@ export function getOptionsStyles(): string {
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 10px;
       transition: background 0.2s;
       border-left: 3px solid transparent;
     }
@@ -59,8 +66,19 @@ export function getOptionsStyles(): string {
       border-left-color: #2196f3;
     }
 
+    .radio-indicator {
+      font-size: 16px;
+      color: #999;
+      flex-shrink: 0;
+    }
+
+    .provider-item.active .radio-indicator {
+      color: #2196f3;
+    }
+
     .provider-info {
       flex: 1;
+      min-width: 0;
     }
 
     .provider-name {
@@ -218,6 +236,15 @@ export function getOptionsStyles(): string {
 
     .btn-test:hover {
       background: #388e3c;
+    }
+
+    .btn-activate {
+      background: #ff9800;
+      color: white;
+    }
+
+    .btn-activate:hover {
+      background: #f57c00;
     }
 
     .empty-state {

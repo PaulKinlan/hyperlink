@@ -71,12 +71,12 @@
     }
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^1.0.0",
-    "@ai-sdk/google": "^1.0.0",
-    "@ai-sdk/openai": "^1.0.0",
-    "@google/genai": "1.10.0",
+    "@ai-sdk/anthropic": "^2.0.0",
+    "@ai-sdk/google": "^2.0.0",
+    "@ai-sdk/openai": "^2.0.0",
+    "@built-in-ai/core": "^2.0.0",
     "@hyperlink-experiments/shared": "1.0.0",
-    "ai": "^4.0.0",
+    "ai": "^5.0.0",
     "turndown": "^7.1.2"
   },
   "devDependencies": {

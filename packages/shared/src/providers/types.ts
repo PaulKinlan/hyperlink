@@ -1,11 +1,16 @@
-export type ProviderType = 'openai' | 'anthropic' | 'google' | 'custom';
+export type ProviderType =
+  | 'openai'
+  | 'anthropic'
+  | 'google'
+  | 'chrome'
+  | 'custom';
 
 export interface ProviderConfig {
   id: string;
   name: string;
   type: ProviderType;
-  apiKey: string;
-  model: string;
+  apiKey?: string;
+  model?: string;
   baseUrl?: string;
   enabled: boolean;
   createdAt: number;
