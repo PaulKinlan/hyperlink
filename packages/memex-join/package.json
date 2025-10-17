@@ -16,17 +16,21 @@
       "output": [
         "dist/manifest.json"
       ],
-      "clean": "if-file-deleted"
+      "clean": true
     },
     "html": {
-      "command": "mkdir -p dist && cp options.html dist/",
+      "command": "mkdir -p dist && cp create-link.html popup.html ui.css dist/",
       "files": [
-        "options.html"
+        "create-link.html",
+        "popup.html",
+        "ui.css"
       ],
       "output": [
-        "dist/options.html"
+        "dist/create-link.html",
+        "dist/popup.html",
+        "dist/ui.css"
       ],
-      "clean": "if-file-deleted"
+      "clean": true
     },
     "icons": {
       "command": "mkdir -p dist/icons && cp -R icons/* dist/icons/",
@@ -36,20 +40,20 @@
       "output": [
         "dist/icons/**"
       ],
-      "clean": "if-file-deleted"
+      "clean": true
     },
     "zip": {
-      "command": "cd dist && zip -r ../merge.zip .",
+      "command": "cd dist && zip -r ../memex-join.zip .",
       "files": [
         "dist/**"
       ],
       "output": [
-        "merge.zip"
+        "memex-join.zip"
       ],
       "dependencies": [
         "build"
       ],
-      "clean": "if-file-deleted"
+      "clean": true
     },
     "build": {
       "command": "esbuild src/background.ts src/create-link.ts src/content.ts src/popup.ts --bundle --platform=browser --outdir=dist --format=esm",
@@ -62,10 +66,12 @@
         "dist"
       ],
       "dependencies": [
-        "../shared:build",
+        "html",
         "icons",
-        "manifest"
-      ]
+        "manifest",
+        "../shared:build"
+      ],
+      "clean": "if-file-deleted"
     }
   },
   "dependencies": {

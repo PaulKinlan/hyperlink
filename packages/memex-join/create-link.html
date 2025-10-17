@@ -3,44 +3,39 @@
 
 <head>
   <title>Create Link</title>
-  <style>
-    body {
-      width: 400px;
-      font-family: sans-serif;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    li {
-      margin-bottom: 10px;
-    }
-
-    a {
-      text-decoration: none;
-      color: blue;
-    }
-  </style>
+  <link rel="stylesheet" href="ui.css">
 </head>
 
 <body>
   <h1>Create Link</h1>
 
-  <h2>History</h2>
-  <ul id="history-list"></ul>
+  <div class="tabs">
+    <button class="tab-button active" data-tab="tabs">Open Tabs</button>
+    <button class="tab-button" data-tab="history">History</button>
+    <button class="tab-button" data-tab="bookmarks">Bookmarks</button>
+    <button class="tab-button" data-tab="links">My Links</button>
+  </div>
 
-  <h2>Bookmarks</h2>
-  <ul id="bookmarks-list"></ul>
+  <div class="tab-content">
+    <div id="tabs-tab" class="tab-pane active">
+      <input type="text" id="tabs-search" class="search-input" placeholder="Search tabs...">
+      <ul id="tabs-list"></ul>
+    </div>
+    <div id="history-tab" class="tab-pane">
+      <input type="text" id="history-search" class="search-input" placeholder="Search history...">
+      <ul id="history-list"></ul>
+    </div>
+    <div id="bookmarks-tab" class="tab-pane">
+      <input type="text" id="bookmarks-search" class="search-input" placeholder="Search bookmarks...">
+      <ul id="bookmarks-list"></ul>
+    </div>
+    <div id="links-tab" class="tab-pane">
+      <input type="text" id="links-search" class="search-input" placeholder="Search links...">
+      <ul id="links-list"></ul>
+    </div>
+  </div>
 
-  <h2>Tabs</h2>
-  <ul id="tabs-list"></ul>
-
-  <h2>User Defined links</h2>
-  <ul id="links-list"></ul>
-
-  <script src="dist/create-link.js"></script>
+  <script src="create-link.js"></script>
 
 </body>
 

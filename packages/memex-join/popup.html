@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Memex Trail Join</title>
-  <style>
-    body {
-      width: 400px;
-      font-family: sans-serif;
-    }
-    h1 {
-      font-size: 1.2em;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 10px;
-    }
-    a {
-      text-decoration: none;
-      color: blue;
-    }
-  </style>
+  <title>Trails</title>
+  <link rel="stylesheet" href="ui.css">
 </head>
+
 <body>
-  <h1>Memex Trail Join</h1>
-  <ul id="links-list"></ul>
-  <script src="dist/popup.js"></script>
+  <h1>Trails</h1>
+
+  <div class="tabs">
+    <button class="tab-button active" data-tab="all">All Links</button>
+    <button class="tab-button" data-tab="current">Current Page</button>
+  </div>
+
+  <div class="tab-content">
+    <div id="all-tab" class="tab-pane active">
+      <input type="text" id="all-search" class="search-input" placeholder="Search links...">
+      <div id="links-list"></div>
+    </div>
+    <div id="current-tab" class="tab-pane">
+      <input type="text" id="current-search" class="search-input" placeholder="Search links...">
+      <div id="current-page-links"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
 </body>
+
 </html>
