@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Merge Link",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Merge the content of a link into your current page so that you can get a quick summary of the content before even visiting it.",
   "action": {
     "default_title": "Merge Link"

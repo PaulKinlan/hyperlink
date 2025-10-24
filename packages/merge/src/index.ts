@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           sendResponse({
             action: 'mergeError',
             error:
-              'No active provider configured. Please configure a provider in the options page.',
+              'No AI provider configured. Click the extension icon and select "Options" to set up a provider. Try Chrome Built-in AI - it\'s free and requires no API key!',
           });
           return;
         }
@@ -130,13 +130,23 @@ ${targetWindow}
   return false;
 });
 
-// Create context menu
-chrome.runtime.onInstalled.addListener(() => {
+// Create context menu and handle first install
+chrome.runtime.onInstalled.addListener(async (details) => {
   chrome.contextMenus.create({
     id: 'merge-link',
     title: 'Merge Link Content',
     contexts: ['link'],
   });
+
+  // On first install, check if user has any providers configured
+  if (details.reason === 'install') {
+    const providerConfig = await getActiveProvider();
+
+    // If no provider configured, open options page to help user get started
+    if (!providerConfig) {
+      chrome.runtime.openOptionsPage();
+    }
+  }
 });
 
 // Handle context menu click

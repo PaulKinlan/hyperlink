@@ -248,18 +248,135 @@ export function getOptionsStyles(): string {
     }
 
     .empty-state {
+      padding: 40px 30px;
+      color: #555;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .empty-state h2 {
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: #333;
       text-align: center;
-      padding: 60px 20px;
-      color: #999;
     }
 
     .empty-state h3 {
       font-size: 18px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      margin-top: 30px;
+      color: #333;
     }
 
-    .empty-state p {
+    .welcome-text {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 30px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .provider-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .provider-option {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+
+    .provider-option:hover {
+      border-color: #bbb;
+      background: #fff;
+    }
+
+    .provider-option.highlight {
+      border-color: #4caf50;
+      background: #f1f8f4;
+    }
+
+    .provider-option-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .provider-option strong {
       font-size: 14px;
+      color: #333;
+    }
+
+    .provider-option p {
+      font-size: 13px;
+      color: #666;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .provider-option a {
+      color: #2196f3;
+      text-decoration: none;
+    }
+
+    .provider-option a:hover {
+      text-decoration: underline;
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge.free {
+      background: #4caf50;
+      color: white;
+    }
+
+    .badge.paid {
+      background: #ff9800;
+      color: white;
+    }
+
+    .badge:not(.free):not(.paid) {
+      background: #999;
+      color: white;
+    }
+
+    .quick-start {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 6px;
+      border-left: 4px solid #2196f3;
+    }
+
+    .quick-start h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    .quick-start ol {
+      margin-left: 20px;
+      line-height: 1.8;
+    }
+
+    .quick-start li {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .quick-start strong {
+      color: #2196f3;
     }
 
     .help-text {

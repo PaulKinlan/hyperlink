@@ -18,8 +18,61 @@ export function getOptionsHTML(extensionName: string): string {
     <div class="main-content">
       <div class="config-panel" id="configPanel">
         <div class="empty-state" id="emptyState">
-          <h3>No Provider Selected</h3>
-          <p>Select a provider from the sidebar or add a new one to get started.</p>
+          <h2>Welcome to ${extensionName}!</h2>
+          <p class="welcome-text">To get started, you'll need to configure an AI provider. Choose the one that works best for you:</p>
+          
+          <div class="provider-options">
+            <div class="provider-option highlight">
+              <div class="provider-option-header">
+                <strong>✅ Chrome (Built-in AI)</strong>
+                <span class="badge free">FREE</span>
+              </div>
+              <p>No API key required - uses Chrome's built-in AI capabilities</p>
+            </div>
+            
+            <div class="provider-option">
+              <div class="provider-option-header">
+                <strong>OpenAI</strong>
+                <span class="badge paid">Requires API Key</span>
+              </div>
+              <p>Access GPT models - <a href="https://platform.openai.com/api-keys" target="_blank">Get API key →</a></p>
+            </div>
+            
+            <div class="provider-option">
+              <div class="provider-option-header">
+                <strong>Anthropic (Claude)</strong>
+                <span class="badge paid">Requires API Key</span>
+              </div>
+              <p>Access Claude models - <a href="https://console.anthropic.com/" target="_blank">Get API key →</a></p>
+            </div>
+            
+            <div class="provider-option">
+              <div class="provider-option-header">
+                <strong>Google (Gemini)</strong>
+                <span class="badge paid">Requires API Key</span>
+              </div>
+              <p>Access Gemini models - <a href="https://aistudio.google.com/app/api-keys" target="_blank">Get API key →</a></p>
+            </div>
+            
+            <div class="provider-option">
+              <div class="provider-option-header">
+                <strong>Custom Endpoint</strong>
+                <span class="badge">Self-Hosted</span>
+              </div>
+              <p>Connect to your own OpenAI-compatible API (Ollama, LM Studio, Azure, etc.)</p>
+            </div>
+          </div>
+          
+          <div class="quick-start">
+            <h3>Quick Start:</h3>
+            <ol>
+              <li>Click "<strong>+ Add Provider</strong>" below</li>
+              <li>Select a provider type</li>
+              <li>For Chrome Built-in: Just name it and save (no API key needed!)</li>
+              <li>For others: Enter your API key and choose a model</li>
+              <li>Click "Save" and you're ready to go!</li>
+            </ol>
+          </div>
         </div>
 
         <div id="configForm" style="display: none">
@@ -31,12 +84,13 @@ export function getOptionsHTML(extensionName: string): string {
             <label for="providerType">Provider Type</label>
             <select id="providerType">
               <option value="">Select a provider...</option>
-              <option value="openai">OpenAI</option>
-              <option value="anthropic">Anthropic (Claude)</option>
-              <option value="google">Google (Gemini)</option>
-              <option value="chrome">Chrome (Built-in)</option>
-              <option value="custom">Custom Endpoint</option>
+              <option value="chrome">Chrome (Built-in) - FREE, no API key needed</option>
+              <option value="openai">OpenAI - Requires API key</option>
+              <option value="anthropic">Anthropic (Claude) - Requires API key</option>
+              <option value="google">Google (Gemini) - Requires API key</option>
+              <option value="custom">Custom Endpoint - For self-hosted models</option>
             </select>
+            <div class="help-text">Choose Chrome Built-in for a free option with no setup required</div>
           </div>
 
           <div class="form-group">
