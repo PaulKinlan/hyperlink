@@ -65,11 +65,13 @@ Each AI provider has their own privacy policy:
 To protect against malicious content from AI responses, the extension implements:
 
 - **HTML Sanitization**: All HTML content from AI providers is sanitized using DOMPurify before being displayed
-- **XSS Prevention**: Dangerous elements like `<script>`, `<iframe>`, `<embed>`, and `<object>` tags are automatically removed
+- **XSS Prevention**: Dangerous elements like `<script>`, `<iframe>`, `<embed>`, and `<object>` tags are encoded to display as text (e.g., `<script>` becomes `&lt;script&gt;`)
 - **Event Handler Blocking**: JavaScript event handlers (onclick, onerror, etc.) are stripped from all content
 - **URL Scheme Validation**: Only safe URL schemes (http, https, mailto) are allowed in links
 - **Content Size Limits**: Maximum 1MB content size to prevent denial-of-service attacks
 - **Whitelist Approach**: Only explicitly safe HTML elements and attributes are allowed
+
+**Why Encoding?** When the AI includes dangerous tags, they're converted to visible text rather than being silently removed. This preserves the AI's intent when showing examples or documentation while preventing any code execution.
 
 These measures ensure that even if an AI provider returns malicious content (intentionally or due to prompt injection), it cannot execute scripts or compromise your browsing security.
 

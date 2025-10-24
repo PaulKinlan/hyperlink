@@ -42,11 +42,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 The original HTML content will be provided in the <localHTML> tag.
 The local markdown content will be provided in the <localMarkdown> tag.
-The markdown content of the page (${targetHref}) window will be provided in the <targetWindow> tag.
+The markdown content of the page (${targetHref}) window will be provided in the <targetMarkdown> tag.
 
-Your goal is to merge the content of the link (defined by <targetWindow>) into the existing paragraph defined by <localMarkdown>, ensuring that the context is preserved and the content flows naturally, while providing a coherent, succinct, and readable output that integrates the new information seamlessly.
+Your goal is to combine the content of the link defined by <targetMarkdown> into the existing paragraph defined by <localMarkdown> while ensuring that the context is preserved and the content flows naturally, while providing a coherent, succinct, and readable output that integrates the new information seamlessly. 
 
-The merged content must contain the link, the anchor text and aim to maintain the original structure of the <localHTML> so that the content flows naturally.
+The result will be HTML that is merged INTO the content in <localHTML>.
+
+The merged content MUST have the following tags must be entity encoded to prevent execution but preserve visual content: <script>, <iframe>, <embed>, <object>, <applet>, <style>, <link>, <meta>, <base>, <form>, <input>, <button>, <textarea>, <select>, <option>.
 
 <localHTML>
   ${localHTML}
@@ -56,9 +58,9 @@ The merged content must contain the link, the anchor text and aim to maintain th
 ${localMarkdown}
 </localMarkdown>
 
-<targetWindow>
+<targetMarkdown>
 ${targetWindow}
-</targetWindow>`;
+</targetMarkdown>`;
 
         const text = await provider.generateText(prompt);
 

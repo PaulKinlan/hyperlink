@@ -199,6 +199,50 @@ export interface SanitizationResult {
 }
 
 /**
+ * List of dangerous HTML tags that should be encoded rather than stripped
+ * This preserves the content when LLM is trying to show examples
+ */
+const DANGEROUS_TAGS = [
+  'script',
+  'iframe',
+  'embed',
+  'object',
+  'applet',
+  'style',
+  'link',
+  'meta',
+  'base',
+  'form',
+  'input',
+  'button',
+  'textarea',
+  'select',
+  'option',
+];
+
+/**
+ * Encodes dangerous HTML tags to HTML entities
+ * This preserves the content visually while preventing execution
+ * Example: <script> becomes &lt;script&gt;
+ */
+function encodeDangerousTags(html: string): string {
+  let encoded = html;
+
+  // Encode each dangerous tag (both opening and closing)
+  DANGEROUS_TAGS.forEach((tag) => {
+    // Match opening tags: <tag...> or <tag ...>
+    const openingRegex = new RegExp(`<${tag}([\\s>])`, 'gi');
+    encoded = encoded.replace(openingRegex, `&lt;${tag}$1`);
+
+    // Match closing tags: </tag>
+    const closingRegex = new RegExp(`</${tag}>`, 'gi');
+    encoded = encoded.replace(closingRegex, `&lt;/${tag}&gt;`);
+  });
+
+  return encoded;
+}
+
+/**
  * Detects if HTML contains potentially dangerous elements before sanitization
  * Used to provide user warnings
  */
@@ -242,8 +286,12 @@ export function sanitizeHTML(html: string): SanitizationResult {
   const hadDangerousContent = detectDangerousContent(html);
 
   try {
-    // Sanitize the HTML
-    const sanitized = DOMPurify.sanitize(html, SANITIZE_CONFIG);
+    // First, encode dangerous tags to HTML entities
+    // This preserves them as visible text rather than stripping them
+    const encoded = encodeDangerousTags(html);
+
+    // Then sanitize the HTML
+    const sanitized = DOMPurify.sanitize(encoded, SANITIZE_CONFIG);
 
     // Additional validation: ensure we got a string back
     if (typeof sanitized !== 'string') {
@@ -258,7 +306,7 @@ export function sanitizeHTML(html: string): SanitizationResult {
     // Add warning if dangerous content was detected
     if (hadDangerousContent) {
       result.warning =
-        'Potentially unsafe content was detected and removed (script tags, event handlers, or dangerous URLs)';
+        'Potentially unsafe content was detected and encoded (script tags, iframes, etc. are now displayed as text)';
     }
 
     return result;

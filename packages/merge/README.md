@@ -147,12 +147,14 @@ If you were using the previous version with a Gemini API key:
 The extension implements comprehensive security measures to protect against malicious content:
 
 - **HTML Sanitization**: All HTML content from AI providers is sanitized using DOMPurify before insertion
-- **XSS Prevention**: Dangerous tags (`<script>`, `<iframe>`, `<embed>`, `<object>`) are automatically removed
+- **XSS Prevention**: Dangerous tags (`<script>`, `<iframe>`, `<embed>`, `<object>`) are encoded to display as text rather than executing
 - **Event Handler Blocking**: All JavaScript event handlers (onclick, onerror, etc.) are stripped
 - **URL Validation**: Only safe URL schemes (http, https, mailto) are allowed in links
-- **Content Size Limits**: Maximum 1MB content size to prevent denial-of-service attacks
+- **Content Size Limits**: Maximum 1MB content to prevent denial-of-service attacks
 - **Graceful Fallback**: If content cannot be safely sanitized, it's displayed as plain text
-- **User Warnings**: You'll be notified if potentially dangerous content was detected and removed
+- **User Warnings**: You'll be notified if potentially dangerous content was detected and encoded
+
+**Encoding vs Stripping**: When the LLM includes dangerous tags like `<script>` or `<iframe>`, they're encoded to HTML entities (e.g., `&lt;script&gt;`) so they display as visible text instead of being executed. This preserves the LLM's intent when showing examples or documentation while keeping you safe.
 
 The extension uses a **whitelist approach** - only explicitly safe HTML elements and attributes are allowed through. This provides defense-in-depth protection against XSS attacks and malicious content injection.
 
