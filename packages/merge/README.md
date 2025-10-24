@@ -135,10 +135,26 @@ If you were using the previous version with a Gemini API key:
 
 ## Privacy & Security
 
+### Data Privacy
+
 - API keys are stored securely in Chrome's synchronized storage
 - Keys are never logged or exposed in the console
 - All AI processing happens via your chosen provider's API
 - No data is sent to third parties other than your configured AI provider
+
+### Security Features
+
+The extension implements comprehensive security measures to protect against malicious content:
+
+- **HTML Sanitization**: All HTML content from AI providers is sanitized using DOMPurify before insertion
+- **XSS Prevention**: Dangerous tags (`<script>`, `<iframe>`, `<embed>`, `<object>`) are automatically removed
+- **Event Handler Blocking**: All JavaScript event handlers (onclick, onerror, etc.) are stripped
+- **URL Validation**: Only safe URL schemes (http, https, mailto) are allowed in links
+- **Content Size Limits**: Maximum 1MB content size to prevent denial-of-service attacks
+- **Graceful Fallback**: If content cannot be safely sanitized, it's displayed as plain text
+- **User Warnings**: You'll be notified if potentially dangerous content was detected and removed
+
+The extension uses a **whitelist approach** - only explicitly safe HTML elements and attributes are allowed through. This provides defense-in-depth protection against XSS attacks and malicious content injection.
 
 ## Troubleshooting
 

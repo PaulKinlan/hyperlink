@@ -1,5 +1,7 @@
 import { parseHTML } from 'linkedom';
 import TurndownService from 'turndown';
+import { sanitizeHTMLSafe } from './sanitizer';
+
 const turndownService = new TurndownService();
 
 turndownService.addRule('no-style', {
@@ -186,9 +188,22 @@ async function performMerge(link: HTMLAnchorElement): Promise<void> {
 
     console.log('Merged HTML:', mergedHtml);
     const html = extractHTMLFromMarkdown(mergedHtml.content);
-    parentElement.innerHTML = html;
 
-    showNotification('✓ Content merged successfully!', 'success');
+    // Sanitize the HTML before insertion to prevent XSS attacks
+    const sanitizationResult = sanitizeHTMLSafe(html);
+    parentElement.innerHTML = sanitizationResult.html;
+
+    // Show warning if dangerous content was detected and removed
+    if (sanitizationResult.hadDangerousContent && sanitizationResult.warning) {
+      console.warn('Security: ' + sanitizationResult.warning);
+      showNotification('⚠️ ' + sanitizationResult.warning, 'info');
+      // Still show success after warning
+      setTimeout(() => {
+        showNotification('✓ Content merged successfully!', 'success');
+      }, 3500);
+    } else {
+      showNotification('✓ Content merged successfully!', 'success');
+    }
   } catch (error) {
     console.error('Merge failed:', error);
     const errorMessage =

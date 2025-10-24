@@ -60,6 +60,19 @@ Each AI provider has their own privacy policy:
 - Keys are never exposed in the browser console or logs
 - No data is transmitted except to your chosen AI provider
 
+### Content Security
+
+To protect against malicious content from AI responses, the extension implements:
+
+- **HTML Sanitization**: All HTML content from AI providers is sanitized using DOMPurify before being displayed
+- **XSS Prevention**: Dangerous elements like `<script>`, `<iframe>`, `<embed>`, and `<object>` tags are automatically removed
+- **Event Handler Blocking**: JavaScript event handlers (onclick, onerror, etc.) are stripped from all content
+- **URL Scheme Validation**: Only safe URL schemes (http, https, mailto) are allowed in links
+- **Content Size Limits**: Maximum 1MB content size to prevent denial-of-service attacks
+- **Whitelist Approach**: Only explicitly safe HTML elements and attributes are allowed
+
+These measures ensure that even if an AI provider returns malicious content (intentionally or due to prompt injection), it cannot execute scripts or compromise your browsing security.
+
 ### Your Control
 
 You have complete control over your data:

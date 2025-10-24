@@ -77,6 +77,7 @@
     "@built-in-ai/core": "^2.0.0",
     "@hyperlink-experiments/shared": "1.0.0",
     "ai": "^5.0.0",
+    "isomorphic-dompurify": "^2.16.0",
     "turndown": "^7.1.2"
   },
   "devDependencies": {
