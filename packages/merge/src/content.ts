@@ -30,35 +30,55 @@ const extractHTMLFromMarkdown = (markdown: string) => {
   return match ? match[1] : markdown; // If no code block, return as-is
 };
 
-// Create and show loading indicator
-function showLoadingIndicator(element: HTMLElement): HTMLElement {
-  const loader = document.createElement('div');
-  loader.style.cssText = `
-    display: inline-block;
-    margin-left: 10px;
-    padding: 5px 10px;
-    background: rgba(33, 150, 243, 0.1);
-    border: 1px solid #2196f3;
-    border-radius: 4px;
-    font-size: 12px;
-    color: #2196f3;
-    font-family: sans-serif;
-    animation: pulse 1.5s ease-in-out infinite;
-  `;
-  loader.textContent = '⏳ Merging content...';
+// Add rainbow glow animation styles to the page
+function injectRainbowStyles(): void {
+  if (document.getElementById('merge-rainbow-styles')) return;
 
-  // Add animation
   const style = document.createElement('style');
+  style.id = 'merge-rainbow-styles';
   style.textContent = `
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+    @keyframes rainbowGlow {
+      0% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.3);
+      }
+      16.6% {
+        box-shadow: 0 0 10px rgba(255, 165, 0, 0.6), 0 0 20px rgba(255, 165, 0, 0.4), inset 0 0 10px rgba(255, 165, 0, 0.3);
+      }
+      33.3% {
+        box-shadow: 0 0 10px rgba(255, 255, 0, 0.6), 0 0 20px rgba(255, 255, 0, 0.4), inset 0 0 10px rgba(255, 255, 0, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.6), 0 0 20px rgba(0, 255, 0, 0.4), inset 0 0 10px rgba(0, 255, 0, 0.3);
+      }
+      66.6% {
+        box-shadow: 0 0 10px rgba(0, 0, 255, 0.6), 0 0 20px rgba(0, 0, 255, 0.4), inset 0 0 10px rgba(0, 0, 255, 0.3);
+      }
+      83.3% {
+        box-shadow: 0 0 10px rgba(138, 43, 226, 0.6), 0 0 20px rgba(138, 43, 226, 0.4), inset 0 0 10px rgba(138, 43, 226, 0.3);
+      }
+      100% {
+       
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.3);
+      }
+    }
+    
+    .merge-link-loading {
+      animation: rainbowGlow 3s ease-in-out infinite !important;
+      transition: all 0.3s ease !important;
     }
   `;
   document.head.appendChild(style);
+}
 
-  element.parentElement?.insertBefore(loader, element.nextSibling);
-  return loader;
+// Apply rainbow glow effect to link
+function startRainbowGlow(link: HTMLAnchorElement): void {
+  injectRainbowStyles();
+  link.classList.add('merge-link-loading');
+}
+
+// Remove rainbow glow effect from link
+function stopRainbowGlow(link: HTMLAnchorElement): void {
+  link.classList.remove('merge-link-loading');
 }
 
 // Show notification
@@ -129,7 +149,13 @@ async function performMerge(link: HTMLAnchorElement): Promise<void> {
   }
 
   const parentElement = link.parentElement;
-  const loader = showLoadingIndicator(link);
+
+  // Capture the HTML BEFORE adding the visual effect
+  const parentHtml = parentElement?.innerHTML || '';
+  const localMarkdown = turndownService.turndown(parentHtml);
+
+  // Apply rainbow glow effect to the link
+  startRainbowGlow(link);
 
   try {
     // Get markdown from linked page
@@ -141,9 +167,6 @@ async function performMerge(link: HTMLAnchorElement): Promise<void> {
     if (targetMarkdown.error) {
       throw new Error(targetMarkdown.error);
     }
-
-    const parentHtml = parentElement?.innerHTML || '';
-    const localMarkdown = turndownService.turndown(parentHtml);
 
     console.log('Markdown from link:', targetMarkdown.markdown);
     console.log('Local markdown:', localMarkdown);
@@ -172,7 +195,7 @@ async function performMerge(link: HTMLAnchorElement): Promise<void> {
       error instanceof Error ? error.message : 'Failed to merge content';
     showNotification(`✗ ${errorMessage}`, 'error');
   } finally {
-    loader.remove();
+    stopRainbowGlow(link);
   }
 }
 

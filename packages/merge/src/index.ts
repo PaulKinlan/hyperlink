@@ -38,15 +38,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         const provider = ProviderFactory.create(providerConfig);
 
-        const prompt = `You are a tool that merges the content of a link into the existing paragraph and returns valid HTML that includes the content of the link while preserving the context and flow of the original text.
+        const prompt = `You are a tool that merges the content of a link into the existing paragraph and returns valid HTML.
 
 The original HTML content will be provided in the <localHTML> tag.
 The local markdown content will be provided in the <localMarkdown> tag.
 The markdown content of the page (${targetHref}) window will be provided in the <targetWindow> tag.
 
-Your goal is to merge the content of the link into the existing paragraph, ensuring that the context is preserved and the content flows naturally, while providing a coherent and readable output that integrates the new information seamlessly.
+Your goal is to merge the content of the link (defined by <targetWindow>) into the existing paragraph defined by <localMarkdown>, ensuring that the context is preserved and the content flows naturally, while providing a coherent, succinct, and readable output that integrates the new information seamlessly.
 
-The link should still be present in the merged content.
+The merged content must contain the link, the anchor text and aim to maintain the original structure of the <localHTML> so that the content flows naturally.
 
 <localHTML>
   ${localHTML}
