@@ -9,38 +9,31 @@
   },
   "wireit": {
     "manifest": {
-      "command": "mkdir -p dist && cp manifest.json dist/",
+      "command": "mkdir -p dist && cp src/manifest.json dist/",
       "files": [
-        "manifest.json"
+        "src/manifest.json"
       ],
       "output": [
         "dist/manifest.json"
-      ],
-      "clean": true
+      ]
     },
     "html": {
-      "command": "mkdir -p dist && cp create-link.html popup.html ui.css dist/",
+      "command": "echo HELLO && mkdir -p dist && cp {src/create-link.html,src/popup.html,src/ui.css} dist/",
       "files": [
-        "create-link.html",
-        "popup.html",
-        "ui.css"
+        "src/*.{html,css}"
       ],
       "output": [
-        "dist/create-link.html",
-        "dist/popup.html",
-        "dist/ui.css"
-      ],
-      "clean": true
+        "dist/*.{html,css}"
+      ]
     },
     "icons": {
-      "command": "mkdir -p dist/icons && cp -R icons/* dist/icons/",
+      "command": "mkdir -p dist/icons && cp -R src/icons/* dist/icons/",
       "files": [
-        "icons/*.png"
+        "src/icons/*.png"
       ],
       "output": [
         "dist/icons/**"
-      ],
-      "clean": true
+      ]
     },
     "zip": {
       "command": "cd dist && zip -r ../memex-join.zip .",
@@ -52,26 +45,22 @@
       ],
       "dependencies": [
         "build"
-      ],
-      "clean": true
+      ]
     },
     "build": {
-      "command": "esbuild src/background.ts src/create-link.ts src/content.ts src/popup.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "command": "mkdir -p dist && esbuild src/background.ts src/create-link.ts src/content.ts src/popup.ts --bundle --platform=browser --outdir=dist --format=esm",
       "files": [
-        "src/**/*.ts",
-        "manifest.json",
-        "popup.html"
+        "src/**/*.ts"
       ],
       "output": [
-        "dist"
+        "dist/*.js"
       ],
       "dependencies": [
         "html",
         "icons",
         "manifest",
         "../shared:build"
-      ],
-      "clean": "if-file-deleted"
+      ]
     }
   },
   "dependencies": {

@@ -1,9 +1,10 @@
 {
   "name": "Trails",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "manifest_version": 3,
   "description": "Create links between content on any web page and any other and have them persist.",
-  "permissions": ["storage", "contextMenus", "history", "tabs", "bookmarks"],
+  "permissions": ["storage", "contextMenus", "commands"],
+  "optional_permissions": ["history", "tabs", "bookmarks"],
   "background": {
     "service_worker": "background.js"
   },

@@ -222,8 +222,68 @@ const renderLinks = (searchTerm: string = '') => {
   }
 };
 
+// Permission checking and requesting
+const checkPermission = async (permission: string): Promise<boolean> => {
+  return await chrome.permissions.contains({ permissions: [permission] });
+};
+
+const requestPermission = async (permission: string): Promise<boolean> => {
+  return await chrome.permissions.request({ permissions: [permission] });
+};
+
+// Render permission request UI
+const renderPermissionRequest = (
+  containerId: string,
+  permissionName: string,
+  featureName: string,
+  description: string,
+) => {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="permission-request">
+      <div class="permission-icon">🔒</div>
+      <h3>${featureName} Access</h3>
+      <p>${description}</p>
+      <button class="permission-button" data-permission="${permissionName}">
+        Enable ${featureName} Access
+      </button>
+      <p class="permission-note">This is optional - you can still create links using other tabs.</p>
+    </div>
+  `;
+
+  const button = container.querySelector('.permission-button');
+  if (button) {
+    button.addEventListener('click', async () => {
+      const granted = await requestPermission(permissionName);
+      if (granted) {
+        // Reload the data for this tab
+        if (permissionName === 'tabs') {
+          await loadTabs();
+        } else if (permissionName === 'history') {
+          await loadHistory();
+        } else if (permissionName === 'bookmarks') {
+          await loadBookmarks();
+        }
+      }
+    });
+  }
+};
+
 // Load initial data
 const loadTabs = async () => {
+  const hasPermission = await checkPermission('tabs');
+  if (!hasPermission) {
+    renderPermissionRequest(
+      'tabs-list',
+      'tabs',
+      'Open Tabs',
+      'To link to content in your open tabs, we need permission to see your tab list.',
+    );
+    return;
+  }
+
   const tabs = await chrome.tabs.query({});
   allTabs = tabs.map((tab) => ({
     url: tab.url,
@@ -232,14 +292,36 @@ const loadTabs = async () => {
   renderTabs();
 };
 
-const loadHistory = () => {
+const loadHistory = async () => {
+  const hasPermission = await checkPermission('history');
+  if (!hasPermission) {
+    renderPermissionRequest(
+      'history-list',
+      'history',
+      'Browser History',
+      'To link to recently visited pages, we need permission to access your history.',
+    );
+    return;
+  }
+
   chrome.history.search({ text: '', maxResults: 100 }, (historyItems) => {
     allHistory = historyItems;
     renderHistory();
   });
 };
 
-const loadBookmarks = () => {
+const loadBookmarks = async () => {
+  const hasPermission = await checkPermission('bookmarks');
+  if (!hasPermission) {
+    renderPermissionRequest(
+      'bookmarks-list',
+      'bookmarks',
+      'Bookmarks',
+      'To link to your saved bookmarks, we need permission to access them.',
+    );
+    return;
+  }
+
   chrome.bookmarks.getTree((bookmarks) => {
     allBookmarks = [];
     const traverseBookmarks = (nodes: BookmarkNode[]) => {

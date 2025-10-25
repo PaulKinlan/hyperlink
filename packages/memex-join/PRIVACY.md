@@ -40,14 +40,21 @@ All your link data is accessible through:
 
 ## Permissions Explained
 
-The extension requires the following permissions:
+The extension requires the following **core permissions**:
 
 - **storage**: To save your links locally on your device
 - **contextMenus**: To add "Create Trail" to the right-click menu
-- **activeTab**: To detect text selections on the current page
-- **history**: To show your recent browsing history in the link creation interface
+
+The extension requests the following **optional permissions** (you can choose to grant or deny these):
+
 - **tabs**: To access open tab information for the link creation interface
+  - The extension works without this - you just won't see your open tabs in the link creator
+- **history**: To show your recent browsing history in the link creation interface
+  - The extension works without this - you just won't see your browsing history in the link creator
 - **bookmarks**: To show your bookmarks in the link creation interface
+  - The extension works without this - you just won't see your bookmarks in the link creator
+
+**Important**: These optional permissions are requested individually when you try to use each feature. You can grant all, some, or none of them. The extension will continue to work - you'll just have fewer options when creating links. This design is especially helpful in enterprise environments where some permissions may be restricted by policy.
 
 ## Data Retention
 

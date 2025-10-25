@@ -24,3 +24,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     await chrome.action.openPopup();
   }
 });
+
+chrome.action.onClicked.addListener(async (tab) => {
+  await chrome.action.setPopup({
+    popup: 'popup.html',
+  });
+  await chrome.action.openPopup();
+});
