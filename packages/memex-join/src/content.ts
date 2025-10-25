@@ -481,18 +481,27 @@ document.addEventListener('paste', (event: ClipboardEvent) => {
   }
 });
 
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'createLink') {
     const { textFragment, targetLink } = request;
-    const createLinkResult = await createLink(textFragment, targetLink);
-    console.log('Create link result:', createLinkResult);
-    sendResponse({ status: 'success' });
-    return false;
+    createLink(textFragment, targetLink)
+      .then((createLinkResult) => {
+        console.log('Create link result:', createLinkResult);
+        sendResponse({ status: 'success' });
+      })
+      .catch((error) => {
+        console.error('Error creating link:', error);
+        sendResponse({ status: 'error', error: error.message });
+      });
+    return true; // Keep message channel open for async response
   }
 
   if (request.action === 'getSelectedText') {
     const selectedText = window.getSelection()?.toString() || '';
     const context = getSurroundingContext(selectedText);
     sendResponse({ selectedText, context });
+    return true; // Explicit return for consistency
   }
+
+  return false; // No handler for this action
 });

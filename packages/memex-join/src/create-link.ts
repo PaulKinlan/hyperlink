@@ -38,39 +38,48 @@ const createLinkHandler = async (event: Event) => {
     return;
   }
 
-  const { selectedText, context } = await chrome.tabs.sendMessage(
-    currentTab[0].id!,
-    {
-      action: 'getSelectedText',
-    },
-  );
+  try {
+    const { selectedText, context } = await chrome.tabs.sendMessage(
+      currentTab[0].id!,
+      {
+        action: 'getSelectedText',
+      },
+    );
 
-  if (!selectedText) {
-    console.error('No text selected');
-    return;
-  }
+    if (!selectedText) {
+      console.error('No text selected');
+      return;
+    }
 
-  // Build context-aware text fragment
-  let fragmentText = '';
-  if (context?.prefix && context?.suffix) {
-    fragmentText = `${encodeURIComponent(context.prefix).replace(/-/g, '%2D')}-,${encodeURIComponent(selectedText).replace(/-/g, '%2D')},-${encodeURIComponent(context.suffix).replace(/-/g, '%2D')}`;
-  } else if (context?.prefix) {
-    fragmentText = `${encodeURIComponent(context.prefix).replace(/-/g, '%2D')}-,${encodeURIComponent(selectedText).replace(/-/g, '%2D')}`;
-  } else if (context?.suffix) {
-    fragmentText = `${encodeURIComponent(selectedText).replace(/-/g, '%2D')},-${encodeURIComponent(context.suffix).replace(/-/g, '%2D')}`;
-  } else {
-    fragmentText = encodeURIComponent(selectedText).replace(/-/g, '%2D');
-  }
+    // Build context-aware text fragment
+    let fragmentText = '';
+    if (context?.prefix && context?.suffix) {
+      fragmentText = `${encodeURIComponent(context.prefix).replace(/-/g, '%2D')}-,${encodeURIComponent(selectedText).replace(/-/g, '%2D')},-${encodeURIComponent(context.suffix).replace(/-/g, '%2D')}`;
+    } else if (context?.prefix) {
+      fragmentText = `${encodeURIComponent(context.prefix).replace(/-/g, '%2D')}-,${encodeURIComponent(selectedText).replace(/-/g, '%2D')}`;
+    } else if (context?.suffix) {
+      fragmentText = `${encodeURIComponent(selectedText).replace(/-/g, '%2D')},-${encodeURIComponent(context.suffix).replace(/-/g, '%2D')}`;
+    } else {
+      fragmentText = encodeURIComponent(selectedText).replace(/-/g, '%2D');
+    }
 
-  const { status } = await chrome.tabs.sendMessage(currentTab[0].id!, {
-    action: 'createLink',
-    textFragment: `#:~:text=${fragmentText}`,
-    targetLink,
-  });
+    const { status } = await chrome.tabs.sendMessage(currentTab[0].id!, {
+      action: 'createLink',
+      textFragment: `#:~:text=${fragmentText}`,
+      targetLink,
+    });
 
-  if (status === 'success') {
-    console.log('Link created successfully');
-    window.close();
+    if (status === 'success') {
+      console.log('Link created successfully');
+      window.close();
+    }
+  } catch (error) {
+    console.error('Error communicating with content script:', error);
+    // The content script might not be loaded on this tab
+    // This can happen on restricted pages (chrome://, about:, etc.) or if the extension just installed
+    alert(
+      'Unable to create link from this page. The content script may not be loaded. Try refreshing the page or selecting text on a regular web page.',
+    );
   }
 };
 
