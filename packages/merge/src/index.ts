@@ -10,6 +10,10 @@ async function getActiveProvider(): Promise<ProviderConfig | null> {
   return await storageManager.getActiveProvider();
 }
 
+const generateRandomTagName = (prefix: string): string => {
+  return prefix + '-' + globalThis.crypto.randomUUID();
+};
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'merge') {
     (async () => {
@@ -38,29 +42,33 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         const provider = ProviderFactory.create(providerConfig);
 
+        const localHTMLTag = generateRandomTagName('localHTML');
+        const localMarkdownTag = generateRandomTagName('localMarkdown');
+        const targetMarkdownTag = generateRandomTagName('targetMarkdown');
+
         const prompt = `You are a tool that merges the content of a link into the existing paragraph and returns valid HTML.
 
-The original HTML content will be provided in the <localHTML> tag.
-The local markdown content will be provided in the <localMarkdown> tag.
-The markdown content of the page (${targetHref}) window will be provided in the <targetMarkdown> tag.
+The original HTML content will be provided in the <${localHTMLTag}> tag.
+The local markdown content will be provided in the <${localMarkdownTag}> tag.
+The markdown content of the page (${targetHref}) window will be provided in the <${targetMarkdownTag}> tag.
 
-Your goal is to combine the content of the link defined by <targetMarkdown> into the existing paragraph defined by <localMarkdown> while ensuring that the context is preserved and the content flows naturally, while providing a coherent, succinct, and readable output that integrates the new information seamlessly. 
+Your goal is to combine the content of the link defined by <${targetMarkdownTag}> into the existing paragraph defined by <${localMarkdownTag}> while ensuring that the context is preserved and the content flows naturally, while providing a coherent, succinct, and readable output that integrates the new information seamlessly.
 
-The result will be HTML that is merged INTO the content in <localHTML>.
+Your final result will be HTML that is to be merged with the content in <${localHTMLTag}>.
 
 The merged content MUST have the following tags must be entity encoded to prevent execution but preserve visual content: <script>, <iframe>, <embed>, <object>, <applet>, <style>, <link>, <meta>, <base>, <form>, <input>, <button>, <textarea>, <select>, <option>.
 
-<localHTML>
+<${localHTMLTag}>
   ${localHTML}
-</localHTML>
+</${localHTMLTag}>
 
-<localMarkdown>
+<${localMarkdownTag}>
 ${localMarkdown}
-</localMarkdown>
+</${localMarkdownTag}>
 
-<targetMarkdown>
+<${targetMarkdownTag}>
 ${targetWindow}
-</targetMarkdown>`;
+</${targetMarkdownTag}>`;
 
         const text = await provider.generateText(prompt);
 
