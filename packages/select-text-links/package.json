@@ -7,14 +7,38 @@
     "build": "wireit"
   },
   "wireit": {
-    "build": {
-      "command": "esbuild src/background.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+    "manifest": {
+      "command": "mkdir -p dist && cp manifest.json dist/",
       "files": [
-        "src/**/*.ts",
         "manifest.json"
       ],
       "output": [
-        "dist"
+        "dist/manifest.json"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "icons": {
+      "command": "mkdir -p dist/icons && cp -R icons/* dist/icons/",
+      "files": [
+        "icons/*.png"
+      ],
+      "output": [
+        "dist/icons/**"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "build": {
+      "command": "esbuild src/background.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "files": [
+        "src/**/*.ts"
+      ],
+      "output": [
+        "dist/background.js",
+        "dist/content.js"
+      ],
+      "dependencies": [
+        "manifest",
+        "icons"
       ]
     }
   },
