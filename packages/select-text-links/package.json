@@ -1,0 +1,24 @@
+{
+  "name": "@hyperlink-experiments/select-text-links",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/background.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "esbuild src/background.ts src/content.ts --bundle --platform=browser --outdir=dist --format=esm",
+      "files": [
+        "src/**/*.ts",
+        "manifest.json"
+      ],
+      "output": [
+        "dist"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.208"
+  }
+}
