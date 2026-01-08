@@ -5,7 +5,7 @@ function getLinksInSelection(): string[] {
     return [];
   }
 
-  const links: string[] = [];
+  const linksSet = new Set<string>();
 
   // Get the range of the selection
   const range = selection.getRangeAt(0);
@@ -18,8 +18,8 @@ function getLinksInSelection(): string[] {
 
   anchorElements.forEach((anchor) => {
     const href = (anchor as HTMLAnchorElement).href;
-    if (href && !links.includes(href)) {
-      links.push(href);
+    if (href) {
+      linksSet.add(href);
     }
   });
 
@@ -35,24 +35,24 @@ function getLinksInSelection(): string[] {
     const closestAnchor = parentElement.closest('a[href]');
     if (closestAnchor) {
       const href = (closestAnchor as HTMLAnchorElement).href;
-      if (href && !links.includes(href)) {
-        links.push(href);
+      if (href) {
+        linksSet.add(href);
       }
     }
 
-    // Also find all anchors that intersect with the selection
-    const allAnchors = document.querySelectorAll('a[href]');
-    allAnchors.forEach((anchor) => {
+    // Find all anchors within the common ancestor to limit scope
+    const ancestorAnchors = parentElement.querySelectorAll('a[href]');
+    ancestorAnchors.forEach((anchor) => {
       if (selection.containsNode(anchor, true)) {
         const href = (anchor as HTMLAnchorElement).href;
-        if (href && !links.includes(href)) {
-          links.push(href);
+        if (href) {
+          linksSet.add(href);
         }
       }
     });
   }
 
-  return links;
+  return Array.from(linksSet);
 }
 
 // Listen for messages from the background script
