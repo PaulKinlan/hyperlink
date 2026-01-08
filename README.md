@@ -10,6 +10,7 @@ This monorepo contains the following packages:
 -   `merge`: A Chrome extension for merging content.
 -   `summary`: A Chrome extension for summarizing links.
 -   `tab-group-summary`: A Chrome extension that summarizes each page inside a tab group.
+-   `select-text-links`: A Chrome extension that opens all hyperlinks within selected text in new tabs.
 
 ## Getting Started
 
